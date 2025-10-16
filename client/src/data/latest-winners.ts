@@ -105,10 +105,6 @@ export const getLatestWinnersData = (): LatestWinnerData[] => {
     return _latestWinnersData;
 };
 
-// For backward compatibility - this will be generated on first access
-export const latestWinnersData = new Proxy([] as LatestWinnerData[], {
-    get(target, prop) {
-        const data = getLatestWinnersData();
-        return data[prop as keyof LatestWinnerData[]];
-    }
-});
+// For backward compatibility - generate data on module load
+// This ensures consistent data between server and client
+export const latestWinnersData = generateRandomWinners(20);

@@ -40,7 +40,9 @@ const Home = () => {
     }
 
     return (
-        <main className="before:absolute before:top-0 before:left-0 before:block before:h-screen before:w-full before:bg-[url('/home-page-logged-out/hero-sec-bg.png')] before:bg-cover before:bg-center before:bg-no-repeat before:content-['']">
+        <main className="before:absolute before:top-0 before:left-0 before:block before:h-screen before:w-full before:bg-[url('/home-page-logged-out/hero-sec-bg.avif')] before:bg-cover before:bg-center before:bg-no-repeat before:content-['']">
+
+        {/* <main className="before:absolute before:top-0 before:left-0 before:block before:h-screen before:w-full before:bg-[url('/home-page-logged-out/hero-sec-bg.png')] before:bg-cover before:bg-center before:bg-no-repeat before:content-['']"> */}
             <HeroSection />
             <FeatureGames />
             <ReferFriends />

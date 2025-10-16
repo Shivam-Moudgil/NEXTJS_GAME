@@ -39,20 +39,21 @@ const FeatureTiles = () => {
                                                     glowColor={`var(--color-${tile.icon.color}-500)`}
                                                     glowLayers={1}
                                                     glowSpread={7}
+                                                    className='motion-safe:motion-scale-loop-[1.06] motion-safe:motion-duration-2000 motion-safe:motion-ease-in-out-cubic'
                                                 >
                                                     <IconComponent
                                                         className='xl:size-17.5! lg:size-10! md:size-12! max-sm:size-10!'
                                                         color={`var(--color-${tile.icon.color}-500)`}
                                                     />
                                                 </NeonIcon>
-                                                <h5 className='h5-title -mb-[2px] tracking-normal! capitalize!'>
+                                                <h5 className='text-lg -mb-[2px] tracking-normal! capitalize! text-wrap text-start leading-6!'>
                                                     {tile.title}
                                                 </h5>
                                             </div>
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent
-                                        className='md:max-w-[650px]!'
+                                        className='md:max-w-[680px]!'
                                         neonBoxClass='max-sm:pt-3 max-sm:px-0'
                                     >
                                         <ScrollArea type='always'>
