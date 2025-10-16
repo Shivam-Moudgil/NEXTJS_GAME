@@ -107,7 +107,7 @@ export const faqData: FaqItem[] = [
     },
     {
         question: 'How old do I need to be to play?',
-        answer: 'You must meet the legal age requirement for online gaming in your jurisdiction, typically 18 or 21 years old, to participate and redeem rewards.',
+        answer: 'You must meet the legal age requirement for online gaming in your jurisdiction, typically 21 or 21 years old, to participate and redeem rewards.',
     },
     {
         question: 'How does Golden Ticket Online Arcade and Casino work?',

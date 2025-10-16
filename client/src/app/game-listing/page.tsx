@@ -132,7 +132,7 @@ function GameListing() {
                             <ScrollBar orientation='horizontal' />
                         </ScrollArea>
 
-                        <div className='mt-5 mb-3 flex gap-4 max-sm:flex-col items-center justify-between'>
+                        {/* <div className='mt-5 mb-3 flex gap-4 max-sm:flex-col items-center justify-between'>
                             <SecTitle
                                 icon={
                                     <Image
@@ -147,7 +147,7 @@ function GameListing() {
                                 All Games
                             </SecTitle>
 
-                            {/* <div className='flex items-center gap-4 '>
+                            <div className='flex items-center gap-4 '>
                                 <NeonText
                                     className='text-base font-bold text-nowrap'
                                     glowSpread={0.4}
@@ -178,8 +178,8 @@ function GameListing() {
                                     </SelectTrigger>
                                     <SelectContent />
                                 </Select>
-                            </div> */}
-                        </div>
+                            </div>
+                        </div> */}
 
                         {GAME_TABS.map((tab) => {
                             const data = tabData.get(tab.id);
@@ -223,7 +223,7 @@ function GameListing() {
                                             ) : games.length === 0 ? (
                                                 // Empty state
                                                 <div className='col-span-full text-center py-12'>
-                                                    <p className='text-gray-400'>No games available</p>
+                                                    <p className='text-gray-400'>Coming soon...</p>
                                                 </div>
                                             ) : (
                                                 // Games

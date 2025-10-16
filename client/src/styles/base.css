@@ -30,6 +30,10 @@
         @apply cursor-pointer select-none;
     }
 
+    img {
+        @apply pointer-events-auto select-none;
+    }
+
     tr:has(> th) {
         @apply border-b-[0]!;
     }
@@ -48,7 +52,8 @@
         transition: 0.3s linear !important;
     }
 
-    section {
-        @apply relative z-[1];
+    section,
+    .motion {
+        @apply relative z-[2];
     }
 }

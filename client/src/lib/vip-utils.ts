@@ -33,7 +33,7 @@ export const getTierColor = (tier: string) => {
 
 export const getTierDisplayName = (tier: string) => {
     const tierNames: Record<string, string> = {
-        'none': 'Standard Player',
+        'none': 'Standard',
         'iron': 'Iron Tier',
         'bronze': 'Bronze Tier',
         'silver': 'Silver Tier',

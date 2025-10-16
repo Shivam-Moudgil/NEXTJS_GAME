@@ -18,7 +18,8 @@ const restrictedStates = {
   "NJ": "New Jersey",
   "CT": "Connecticut",
   "NY": "New York",
-  "DE": "Delaware"
+  "DE": "Delaware",
+  "CA": "California"
 } as const;
 
 // Quebec is allowed, all other Canadian provinces are restricted

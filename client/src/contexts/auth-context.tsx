@@ -17,6 +17,7 @@ interface AuthContextType {
     setLoggedIn: (value: boolean) => void;
     setUser: (user: User | null) => void;
     updateUserBalance: (newBalance: number) => void;
+    updateUserSCBalance: (newBalance: number) => void;
     updateUserFlags: (updates: Partial<Pick<User, 'isNewUser' | 'claimedDailyBonus' | 'loginStreak' | 'isPhoneVerified'>>) => void;
     refetchUser: () => Promise<void>;
     logout: () => Promise<void>;
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContextType>({
     setLoggedIn: () => {},
     setUser: () => {},
     updateUserBalance: () => {},
+    updateUserSCBalance: () => {},
     updateUserFlags: () => {},
     refetchUser: async () => {},
     logout: async () => {},
@@ -115,6 +117,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const updateUserBalance = (newBalance: number) => {
         setUser(prev => prev ? { ...prev, balance: prev.balance + newBalance } : null);
     };
+    const updateUserSCBalance = (newBalance: number) => {
+        setUser(prev => prev ? { ...prev, sweepCoins: prev.sweepCoins + newBalance } : null);
+    };
 
     const updateUserFlags = (updates: Partial<Pick<User, 'isNewUser' | 'claimedDailyBonus' | 'loginStreak' | 'isPhoneVerified'>>) => {
         setUser(prev => prev ? { ...prev, ...updates } : null);
@@ -156,6 +161,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setLoggedIn, 
             setUser, 
             updateUserBalance, 
+            updateUserSCBalance,
             updateUserFlags,
             refetchUser,
             logout,

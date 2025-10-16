@@ -127,8 +127,8 @@ export default function TransactionHistory() {
                             </SelectTrigger>
                             <SelectContent sideOffset={5}>
                                 <SelectItem value="all">All Types</SelectItem>
-                                <SelectItem value="deposit">Deposit</SelectItem>
-                                <SelectItem value="withdrawal">Withdrawal</SelectItem>
+                                <SelectItem value="deposit">Purchases</SelectItem>
+                                <SelectItem value="withdrawal">Redemptions</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>

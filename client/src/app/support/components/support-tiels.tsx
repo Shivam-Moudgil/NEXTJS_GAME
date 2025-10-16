@@ -12,7 +12,7 @@ export default function SupportTiels() {
         {
             title: 'Available 24/7',
             description:
-                'Round-the-clock support for all your gaming needs, every day of the year.',
+                'Round-the-clock support for all account and platform questions, every day of the year.',
             color: '--color-pink-500',
         },
     ];

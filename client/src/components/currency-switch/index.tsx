@@ -72,8 +72,8 @@ export default function CurrencySwitch({ className }: { className?: string }) {
         bonus_gc: {
             label: 'GC',
             fullLabel:'Gold Coins',
-            description:'Play-for-fun currency. Not redeemable for prizes. Used for casual gameplay.',
-            amount: user?.balance || 0,
+            description:'Play-for-fun mode. Used for bonus games, daily rewards, and casual gameplay.',
+           amount: user?.balance || 0,
             img: '/coins/gold-coin.svg',
             colorClass: 'text-yellow-300',
             badge: (
@@ -93,9 +93,9 @@ export default function CurrencySwitch({ className }: { className?: string }) {
         game_gc: {
             label: 'GC',
             fullLabel: 'Exlusive Gold Coins',
-            description:'Purchased currency used to access Signature and Exclusive Games. For entertainment only. Not redeemable for rewards.',
+        description: 'Play-for-fun mode. Used to access exclusive and signature games for entertainment only.',
             amount: walletBalance || 0,
-            img: '/coins/gold-coin.svg',
+            img: '/coins/bronze-coin.svg',
             colorClass: 'text-yellow-300',
             badge: (
                 <span className='ml-1.5 px-1.5 py-0.5 bg-purple-500/20 border border-purple-500/40 rounded text-[10px] font-bold text-purple-300 uppercase'>
@@ -115,7 +115,7 @@ export default function CurrencySwitch({ className }: { className?: string }) {
             label: 'SC',
             fullLabel: 'Sweep Coins',
             description:
-            'Promotional currency. Eligible for redemptions per terms in supported regions.',
+            'Promotional play mode. Used for sweepstakes-style games available in supported regions per terms.',
             amount: user?.sweepCoins || 0,
             img: '/coins/sweep-coin.svg',
             colorClass: 'text-green-400',
@@ -133,7 +133,7 @@ export default function CurrencySwitch({ className }: { className?: string }) {
     const coin = COINS[value];
 
     // Show only the relevant GC based on game type, plus SC
-    const availableCoins: CoinKey[] = isOnBonusGames ? ['bonus_gc', 'sc'] : ['game_gc', 'sc'];
+    const availableCoins: CoinKey[] =  ['bonus_gc', 'game_gc','sc'];
 
     return (
         <div className={cn('*:not-first:mt-2', className)}>

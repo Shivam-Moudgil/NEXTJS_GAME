@@ -358,7 +358,7 @@ export default function SweepstakesSpinModal() {
                                 >
                                     I agree to the official{' '}
                                     <Link
-                                        href='/sweepstake-rules'
+                                        href='/sweepstakes-rules'
                                         target='_blank'
                                         title='Sweepstakes Rules'
                                         className='underline hover:text-white'

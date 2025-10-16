@@ -1,11 +1,12 @@
 import {
-    CompetitionIcon,
     GiftIcon,
+    GoldCoinPurchasesIcon,
     GoldCoinsIcon,
     MailIcon,
 } from '@/app/(home)/components/feature-tiels-icons';
 import NeonBox from '@/components/neon/neon-box';
 import NeonText from '@/components/neon/neon-text';
+import { FeatureTile } from '@/types/content.types';
 import type { GameDataProps } from '@/types/global.type';
 
 type FeatureGamesCategory = {
@@ -1907,133 +1908,169 @@ const FeatureTielsListItem = ({ children }: { children: React.ReactNode }) => (
     </li>
 );
 
-export const featureTielsData: featureTielsDataProps[] = [
+export const featureTielsData: FeatureTile[] = [
     {
-        title: 'Gold Coins',
+        title: 'Daily Login Bonus',
+        icon: {
+            component: GiftIcon,
+            color: 'sky',
+        },
+        modal: {
+            title: 'Daily Login Bonus',
+            content: (
+                <FeatureTielsModalWrapper>
+                    <FeatureTielsText>
+                        Participants can claim free Gold Coins daily by logging
+                        into their Customer Account and claiming the Daily
+                        Bonus.
+                    </FeatureTielsText>
+
+                    <FeatureTielsList>
+                        <FeatureTielsListItem>
+                            Log in once per day to receive a free Gold Coin
+                            bonus.
+                        </FeatureTielsListItem>
+                        <FeatureTielsListItem>
+                            Limit: one claim per day per account.
+                        </FeatureTielsListItem>
+                        <FeatureTielsListItem>
+                            Gold Coins are for gameplay only and cannot be
+                            redeemed for rewards.
+                        </FeatureTielsListItem>
+                    </FeatureTielsList>
+                </FeatureTielsModalWrapper>
+            ),
+        },
+    },
+    {
+        title: 'Alternative Method of Entry (AMOE)',
+        icon: {
+            component: MailIcon,
+            color: 'pink',
+        },
+        modal: {
+            title: 'Alternative Method of Entry Mail-In Request',
+            content: (
+                <FeatureTielsModalWrapper>
+                    <FeatureTielsText>
+                        Sweeps Coins may be requested without purchase by
+                        mailing a handwritten entry. To qualify, include:
+                    </FeatureTielsText>
+                    <FeatureTielsList>
+                        <FeatureTielsListItem>Full name</FeatureTielsListItem>
+                        <FeatureTielsListItem>Address</FeatureTielsListItem>
+                        <FeatureTielsListItem>Email</FeatureTielsListItem>
+                        <FeatureTielsListItem>
+                            The phrase: “Golden Ticket Online Arcade Sweepstakes
+                            Entry”
+                        </FeatureTielsListItem>
+                    </FeatureTielsList>
+                    <FeatureTielsText>Mail to:</FeatureTielsText>
+                    <FeatureTielsText>
+                        Golden Ticket Online Arcade
+                        <br />
+                        2186 Jackson Keller Rd, Suite 2269
+                        <br />
+                        San Antonio, TX 78213
+                    </FeatureTielsText>
+                    <FeatureTielsList>
+                        <FeatureTielsListItem>
+                            One request per envelope per day.
+                        </FeatureTielsListItem>
+                        <FeatureTielsListItem>
+                            Requests must be handwritten and legible.
+                        </FeatureTielsListItem>
+                        <FeatureTielsListItem>
+                            Valid entries will receive Sweeps Coins credited to
+                            their account.
+                        </FeatureTielsListItem>
+                    </FeatureTielsList>
+                    <FeatureTielsText>
+                        No purchase necessary to enter. Void where prohibited.
+                    </FeatureTielsText>
+                </FeatureTielsModalWrapper>
+            ),
+        },
+    },
+    {
+        title: 'Free Gold Coin Bonuses',
         icon: {
             component: GoldCoinsIcon,
             color: 'yellow',
         },
         modal: {
-            title: 'Gold Coin Purchase',
+            title: 'Free Gold Coin Bonuses',
             content: (
                 <FeatureTielsModalWrapper>
-                    <FeatureTielsText>
-                        To participate without purchase, mail a handwritten
-                        request including your name, address, email, and the
-                        phrase "Golden Ticket Online Arcade Sweepstakes
-                        Entry" to:
-                    </FeatureTielsText>
-
-                    <FeatureTielsBox>
-                        <FeatureTielsText>
-                            Golden Ticket Online Arcade 2186 Jackson Keller Rd
-                            Suite 2269 San Antonio, TX 78213
-                        </FeatureTielsText>
-                    </FeatureTielsBox>
-
-                    <FeatureTielsText>
-                        Limit: One request per envelope per day. Requests must
-                        be legibly handwritten to qualify.
-                    </FeatureTielsText>
-                </FeatureTielsModalWrapper>
-            ),
-        },
-    },
-    {
-        title: 'Daily Bonus',
-        icon: {
-            component: GiftIcon,
-            color: 'pink',
-        },
-        modal: {
-            title: 'Claim Daily Bonus Gold Coins',
-            content: (
-                <FeatureTielsModalWrapper>
-                    <FeatureTielsText>
-                        New participants receive 10,000 Gold Coins as a sign-on
-                        bonus. Additionally, 5,000 Gold Coins are awarded daily
-                        for use in bonus free-to-play games.
-                    </FeatureTielsText>
-                    <FeatureTielsText>
-                        Participants may also receive additional Gold Coins as a
-                        free promotional bonus when purchasing designated Gold
-                        Coin packages. These bonus Gold Coins are only valid for
-                        use in exclusive games.
-                    </FeatureTielsText>
                     <FeatureTielsList>
                         <FeatureTielsListItem>
-                            Eligible Packages: Only specific packages include
+                            New participants receive 10,000 Gold Coins as a
+                            sign-up bonus.
+                        </FeatureTielsListItem>
+                        <FeatureTielsListItem>
+                            5,000 Gold Coins are awarded daily for use in
+                            free-to-play games.
+                        </FeatureTielsListItem>
+                        <FeatureTielsListItem>
+                            Additional bonus Gold Coins may be received when
+                            purchasing designated Gold Coin packages.
+                        </FeatureTielsListItem>
+                    </FeatureTielsList>
+                    <FeatureTielsText>Details:</FeatureTielsText>
+                    <FeatureTielsList>
+                        <FeatureTielsListItem>
+                            Eligible Packages: Only specific packages include
                             bonus Gold Coins.
                         </FeatureTielsListItem>
                         <FeatureTielsListItem>
-                            Bonus Amounts: Bonus Gold Coins vary by package.
+                            Bonus Amounts: Bonus Gold Coins vary by package.
+                        </FeatureTielsListItem>
+                        <FeatureTielsListItem>
+                            Gold Coins are for entertainment gameplay only and
+                            cannot be redeemed for rewards.
                         </FeatureTielsListItem>
                     </FeatureTielsList>
-                    <FeatureTielsBox>
-                        <FeatureTielsText>
-                            No purchase is necessary to play. All Gold Coins are
-                            for entertainment purposes only and hold no cash
-                            value. Must be 18 or older to participate. Void
-                            where prohibited.
-                        </FeatureTielsText>
-                    </FeatureTielsBox>
-                </FeatureTielsModalWrapper>
-            ),
-        },
-    },
-    {
-        title: 'AMOE (By Mail)',
-        icon: {
-            component: MailIcon,
-            color: 'sky',
-        },
-        modal: {
-            title: 'Request via Postal Mail',
-            content: (
-                <FeatureTielsModalWrapper>
-                    {' '}
                     <FeatureTielsText>
-                        Sweeps Coins may be awarded through no-cost giveaway
-                        contests on Golden Ticket Online Arcade and Casino's
-                        social media pages. Follow us for updates!
+                        <strong>Disclaimer:</strong> No purchase necessary to
+                        play. All Gold Coins are for entertainment purposes only
+                        and have no cash value. Must be 21 or older to
+                        participate. Void where prohibited.
                     </FeatureTielsText>
-                    <FeatureTielsList>
-                        <FeatureTielsListItem>
-                            Enter our social media giveaways for a chance to
-                            win!
-                        </FeatureTielsListItem>
-                        <FeatureTielsListItem>
-                            Contests are free and easy to participate in.
-                        </FeatureTielsListItem>
-                    </FeatureTielsList>
                 </FeatureTielsModalWrapper>
             ),
         },
     },
     {
-        title: 'Competitions',
+        title: 'Gold Coin Purchases',
         icon: {
-            component: CompetitionIcon,
-            color: 'green',
+            component: GoldCoinPurchasesIcon,
+            color: 'rose',
         },
         modal: {
             title: 'By Entering Competitions',
             content: (
                 <FeatureTielsModalWrapper>
+                    <FeatureTielsText>Gold Coin Purchases</FeatureTielsText>
                     <FeatureTielsText>
-                        Participants can claim free Gold Coins daily by logging
-                        into their Customer Account and claiming the Daily Bonus
-                        once per day.
+                        Players may purchase Gold Coin packages for
+                        entertainment gameplay. Some packages may include bonus
+                        Gold Coins as a free promotional reward.
                     </FeatureTielsText>
                     <FeatureTielsList>
                         <FeatureTielsListItem>
-                            Log in every day for a free bonus.
+                            Gold Coins are used for gameplay only and cannot be
+                            redeemed for rewards.
                         </FeatureTielsListItem>
                         <FeatureTielsListItem>
-                            One claim per day per account.
+                            Bonus Gold Coins may vary depending on the package
+                            selected.
                         </FeatureTielsListItem>
                     </FeatureTielsList>
+                    <FeatureTielsText>
+                        <strong>Reminder:</strong> No purchase is necessary to
+                        play. An Alternative Method of Entry is always available
+                        (see AMOE instructions).
+                    </FeatureTielsText>
                 </FeatureTielsModalWrapper>
             ),
         },

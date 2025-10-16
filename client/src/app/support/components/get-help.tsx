@@ -103,7 +103,8 @@ export default function GetHelp() {
                                     icon={option.icon}
                                     size={50}
                                     glowColor={option.color}
-                                    className='mb-6'
+                                    className='mb-6 motion-safe:motion-scale-loop-[1.06] motion-safe:motion-duration-2000 motion-safe:motion-ease-linear
+'
                                     // glowSpread={0.5}
                                 />
                                 <NeonText

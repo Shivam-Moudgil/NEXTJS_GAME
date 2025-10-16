@@ -252,6 +252,8 @@ class VipService {
   /**
    * Check if user is eligible for birthday bonus
    * Supports 3-day claim window (day before, birthday, day after)
+   * Enhanced security: prevents birthday manipulation and tracks claim history
+   * Automatically resets birthdayBonusClaimed field for new years
    */
   async checkBirthdayBonusEligibility(
     userId: string | mongoose.Types.ObjectId,
@@ -270,6 +272,17 @@ class VipService {
 
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Normalize to start of day
+    const currentYear = today.getFullYear();
+    
+    // Auto-reset birthdayBonusClaimed if it's a new year
+    if (vipTier.birthdayBonusClaimed && vipTier.lastBirthdayBonusDate) {
+      const lastClaimYear = new Date(vipTier.lastBirthdayBonusDate).getFullYear();
+      if (lastClaimYear < currentYear) {
+        vipTier.birthdayBonusClaimed = false;
+        await vipTier.save();
+        logger.info(`Auto-reset birthdayBonusClaimed for user ${userId} - new year ${currentYear}`);
+      }
+    }
     
     const birthday = new Date(userBirthday);
     birthday.setFullYear(today.getFullYear()); // Set to current year
@@ -289,12 +302,46 @@ class VipService {
       return { eligible: false, bonusAmount: 0, reason: "Not within birthday window (day before, birthday, or day after)" };
     }
 
-    // Check if already claimed this year
-    if (vipTier.lastBirthdayBonusDate) {
-      const lastClaimYear = new Date(vipTier.lastBirthdayBonusDate).getFullYear();
-      if (lastClaimYear === today.getFullYear()) {
-        return { eligible: false, bonusAmount: 0, reason: "Already claimed this year" };
+    // Enhanced security: Check if this specific birthday was already used for a claim THIS YEAR
+    const birthdayUsedThisYear = vipTier.birthdayBonusHistory?.some(
+      (claim) => {
+        const claimYear = new Date(claim.claimedDate).getFullYear();
+        return claim.birthdayUsed === userBirthday && claimYear === currentYear;
       }
+    );
+    
+    if (birthdayUsedThisYear) {
+      return { 
+        eligible: false, 
+        bonusAmount: 0, 
+        reason: "This birthday has already been used for a bonus claim this year. You can claim again next year." 
+      };
+    }
+
+    // Additional check: Prevent claiming if user has already claimed ANY birthday bonus this year
+    // This prevents users from changing their birthday and claiming again in the same year
+    const anyBirthdayClaimedThisYear = vipTier.birthdayBonusHistory?.some(
+      (claim) => {
+        const claimYear = new Date(claim.claimedDate).getFullYear();
+        return claimYear === currentYear;
+      }
+    );
+    
+    if (anyBirthdayClaimedThisYear) {
+      return { 
+        eligible: false, 
+        bonusAmount: 0, 
+        reason: "You have already claimed a birthday bonus this year. You can claim again next year." 
+      };
+    }
+
+    // Check the birthdayBonusClaimed flag (should be false after auto-reset)
+    if (vipTier.birthdayBonusClaimed) {
+      return { 
+        eligible: false, 
+        bonusAmount: 0, 
+        reason: "Birthday bonus already claimed this year" 
+      };
     }
 
     const tierConfig = this.getTierConfig(vipTier.currentTier);
@@ -305,16 +352,100 @@ class VipService {
   }
 
   /**
-   * Claim birthday bonus
+   * Reset birthday bonus claimed flag for all users (admin function)
+   * This should be run annually to reset all users' birthday bonus eligibility
    */
-  async claimBirthdayBonus(userId: string | mongoose.Types.ObjectId): Promise<number> {
+  async resetAllBirthdayBonusClaims(): Promise<{ resetCount: number }> {
+    const currentYear = new Date().getFullYear();
+    const lastYear = currentYear - 1;
+    
+    // Find all VIP tiers where birthdayBonusClaimed is true and last claim was in previous year
+    const startOfLastYear = new Date(`${lastYear}-01-01`);
+    const endOfLastYear = new Date(`${lastYear}-12-31`);
+    
+    const result = await VipTierModel.updateMany(
+      {
+        birthdayBonusClaimed: true,
+        lastBirthdayBonusDate: {
+          $gte: startOfLastYear,
+          $lte: endOfLastYear
+        }
+      },
+      {
+        $set: { birthdayBonusClaimed: false }
+      }
+    );
+    
+    logger.info(`Reset birthday bonus claims for ${result.modifiedCount} users for year ${currentYear}`);
+    
+    return { resetCount: result.modifiedCount };
+  }
+
+  /**
+   * Get birthday bonus eligibility info including next available date
+   */
+  async getBirthdayBonusInfo(
+    userId: string | mongoose.Types.ObjectId,
+    userBirthday?: string
+  ): Promise<{ 
+    eligible: boolean; 
+    bonusAmount: number; 
+    reason?: string;
+    nextAvailableDate?: string;
+    claimsThisYear: number;
+    totalClaims: number;
+  }> {
+    const eligibility = await this.checkBirthdayBonusEligibility(userId, userBirthday);
+    const vipTier = await this.getOrCreateVipTier(userId);
+    
+    const currentYear = new Date().getFullYear();
+    const claimsThisYear = vipTier.birthdayBonusHistory?.filter(
+      (claim) => new Date(claim.claimedDate).getFullYear() === currentYear
+    ).length || 0;
+    
+    const totalClaims = vipTier.birthdayBonusHistory?.length || 0;
+    
+    // Calculate next available date
+    let nextAvailableDate: string | undefined;
+    if (!eligibility.eligible && userBirthday) {
+      const birthday = new Date(userBirthday);
+      const nextYear = new Date(birthday);
+      nextYear.setFullYear(currentYear + 1);
+      nextAvailableDate = nextYear.toISOString().split('T')[0]; // YYYY-MM-DD format
+    }
+    
+    return {
+      ...eligibility,
+      nextAvailableDate,
+      claimsThisYear,
+      totalClaims,
+    };
+  }
+  async claimBirthdayBonus(
+    userId: string | mongoose.Types.ObjectId, 
+    userBirthday: string
+  ): Promise<number> {
     const vipTier = await this.getOrCreateVipTier(userId);
     const tierConfig = this.getTierConfig(vipTier.currentTier);
     
+    // Record the claim with the birthday used
+    const claimRecord = {
+      claimedDate: new Date(),
+      birthdayUsed: userBirthday,
+      bonusAmount: tierConfig.birthdayBonus,
+    };
+    
+    // Initialize birthdayBonusHistory if it doesn't exist
+    if (!vipTier.birthdayBonusHistory) {
+      vipTier.birthdayBonusHistory = [];
+    }
+    
+    vipTier.birthdayBonusHistory.push(claimRecord);
     vipTier.lastBirthdayBonusDate = new Date();
+    vipTier.birthdayBonusClaimed = true;
     await vipTier.save();
     
-    logger.info(`User ${userId} claimed birthday bonus: ${tierConfig.birthdayBonus} GC`);
+    logger.info(`User ${userId} claimed birthday bonus: ${tierConfig.birthdayBonus} GC using birthday ${userBirthday}`);
     return tierConfig.birthdayBonus;
   }
 
@@ -403,7 +534,8 @@ class VipService {
       vipPeriodStartDate: vipTier.vipPeriodStartDate,
       vipPeriodEndDate: vipTier.vipPeriodEndDate,
       daysRemainingInPeriod,
-      
+      // Birthday bonus info
+      birthdayBonusClaimed: vipTier.birthdayBonusClaimed,
       perks: {
         bonusMultiplier: tierConfig.bonusMultiplier,
         birthdayBonus: tierConfig.birthdayBonus,
@@ -538,16 +670,19 @@ class VipService {
   }
   
   /**
-   * Use/consume a bonus spin
+   * Use/consume a bonus spin for spin wheel
+   * This method validates VIP bonus spins and allows spin wheel usage
    */
   async useBonusSpin(
     userId: string | mongoose.Types.ObjectId,
-    gameId: string,
-    gameName: string
+    ipAddress?: string,
+    userAgent?: string
   ): Promise<{
     success: boolean;
     spinsRemaining: number;
     message: string;
+    spinResult?: any; // Will contain the spin wheel result
+    error?: string;
   }> {
     const vipTier = await this.getOrCreateVipTier(userId);
     const now = new Date();
@@ -559,6 +694,7 @@ class VipService {
         success: false,
         spinsRemaining: 0,
         message: "No bonus spins available",
+        error: "NO_SPINS_AVAILABLE",
       };
     }
     
@@ -572,19 +708,36 @@ class VipService {
         success: false,
         spinsRemaining: 0,
         message: "Your bonus spins have expired",
+        error: "SPINS_EXPIRED",
       };
     }
     
-    // Consume the spin
+    // Import spin wheel service dynamically to avoid circular dependency
+    const spinWheelService = (await import("./spin-wheel.service")).default;
+    
+    // Perform the spin wheel spin
+    const spinResult = await spinWheelService.performSpin(userId, ipAddress, userAgent);
+    
+    if (!spinResult.success) {
+      return {
+        success: false,
+        spinsRemaining: vipTier.bonusSpinsRemaining,
+        message: spinResult.message,
+        error: spinResult.error,
+      };
+    }
+    
+    // Consume the spin only after successful spin wheel result
     vipTier.bonusSpinsRemaining -= 1;
     await vipTier.save();
     
-    logger.info(`User ${userId} used bonus spin on game ${gameName} (${gameId}). Spins remaining: ${vipTier.bonusSpinsRemaining}`);
+    logger.info(`User ${userId} used bonus spin on spin wheel. Spins remaining: ${vipTier.bonusSpinsRemaining}. Won: ${spinResult.result?.amount} ${spinResult.result?.type}`);
     
     return {
       success: true,
       spinsRemaining: vipTier.bonusSpinsRemaining,
       message: `Bonus spin used successfully! ${vipTier.bonusSpinsRemaining} spins remaining`,
+      spinResult: spinResult.result,
     };
   }
 }

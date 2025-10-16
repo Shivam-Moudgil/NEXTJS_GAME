@@ -15,6 +15,7 @@ export interface User {
   _id: string;
   email: string;
   phone: string;
+  birthday?: string | null;
   isEmailVerified: boolean;
   acceptSMSTerms: boolean;
   acceptSMSMarketing: boolean;

@@ -38,6 +38,9 @@ export interface VipStatusResponse {
       spendingNeeded: number;
       message: string;
     };
+    // Birthday-related fields
+    birthdayBonusClaimed?: boolean;
+    birthdayBonusWindowActive?: boolean;
   };
   message: string;
   success: boolean;
@@ -91,6 +94,15 @@ export interface UseBonusSpinResponse {
     success: boolean;
     spinsRemaining: number;
     message: string;
+    spinResult?: {
+      rewardId: number;
+      amount: number;
+      type: 'GC' | 'SC';
+      rarity?: string;
+      description?: string;
+      timestamp?: string;
+      spinId: string;
+    };
   };
   message: string;
   success: boolean;
@@ -137,6 +149,42 @@ export function useBonusSpin(gameId: string, gameName: string) {
   return httpWithErrorHandling<UseBonusSpinResponse>('/vip/bonus-spins/use', { 
     method: 'POST',
     body: { gameId, gameName }
+  });
+}
+
+// Spin-wheel config
+export interface SpinWheelConfigResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    rewards: Array<{
+      id: number;
+      amount: number;
+      type: 'GC' | 'SC';
+      rarity?: string;
+    }>;
+  };
+}
+
+export function getSpinWheelConfig() {
+  return httpWithErrorHandling<SpinWheelConfigResponse>('/spin-wheel/config', { method: 'GET' });
+}
+
+export interface ClaimSpinRewardResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    newBalance: number;
+    spinId: string;
+  };
+}
+
+export function claimSpinReward(spinId: string) {
+  return httpWithErrorHandling<ClaimSpinRewardResponse>('/spin-wheel/claim', {
+    method: 'POST',
+    body: { spinId },
   });
 }
 

@@ -263,7 +263,7 @@ export const PrivacyPolicyData = [
         description: (
             <>
                 <NeonText as='p' className='h5-title mb-2'>
-                    Our Platform is not intended for individuals under 18. We do
+                    Our Platform is not intended for individuals under 21. We do
                     not knowingly collect data from minors.
                 </NeonText>
             </>

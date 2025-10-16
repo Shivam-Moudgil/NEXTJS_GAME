@@ -81,8 +81,8 @@ const transactionHistoryLink: LinkProps = {
 };
 
 const howItWorkLink: LinkProps = {
-    title: "How It's Works",
-    href: '/how-its-work',
+    title: "How It Works",
+    href: '/how-it-works',
     icon: 'lucide:columns-settings',
     color: 'pink',
 };
@@ -137,19 +137,19 @@ const gameSubLinks: LinkProps[] = [
 
 // Social Links
 const socialLinks = {
-    facebook: {
-        title: 'Facebook',
-        href: 'https://www.facebook.com/',
-        icon: '/social-icons/facebook.svg',
+    youtube: {
+        title: 'YouTube',
+        href: 'https://www.youtube.com/@GoldenTicketArcade/shorts',
+        icon: '/social-icons/youtube.svg',
     },
     instagram: {
         title: 'Instagram',
-        href: 'https://www.instagram.com/',
+        href: 'https://www.instagram.com/golden_ticketfam/',
         icon: '/social-icons/instagram.svg',
     },
     tiktok: {
         title: 'TikTok',
-        href: 'https://www.tik-tok.com/',
+        href: 'https://www.tiktok.com/@gtoa_gdrs?is_from_webapp=1&sender_device=pc',
         icon: '/social-icons/tik-tok.svg',
     },
 } as const;
@@ -206,7 +206,7 @@ const uniqueLinks = {
     },
     vipStatus: {
         title: 'VIP Status',
-        href: '#',
+        href: 'vip-program',
     },
     gameHistory: {
         title: 'Game History',
@@ -241,11 +241,15 @@ const legalLinks = {
     },
     sweepstakesRules: {
         title: 'Sweepstakes Rules',
-        href: '/sweepstake-rules',
+        href: '/sweepstakes-rules',
     },
     responsibleGaming: {
         title: 'Responsible Gaming',
         href: '/responsible-gameplay-policy',
+    },
+    smsTerms: {
+        title: 'SMS Terms',
+        href: '/sms-terms',
     },
 } as const;
 
@@ -277,7 +281,7 @@ export const footerAccountLinks: LinkProps[] = [
     myProfileLink,
     coinWalletLink,
     uniqueLinks.vipStatus,
-    // transactionHistoryLink,
+    transactionHistoryLink,
     // uniqueLinks.gameHistory,
     // uniqueLinks.notifications,
 ];
@@ -290,10 +294,11 @@ export const footerLegalLinks: LinkProps[] = [
     legalLinks.accessibility,
     legalLinks.sweepstakesRules,
     legalLinks.responsibleGaming,
+    legalLinks.smsTerms,
 ];
 
 export const footerSocialLinks: LinkProps[] = [
-    socialLinks.facebook,
+    socialLinks.youtube,
     socialLinks.instagram,
     socialLinks.tiktok,
 ];
@@ -318,9 +323,9 @@ export const sidebarLinks: LinkProps[] = [
 
 export const sidebarLinksBottom: LinkProps[] = [
     // howItWorkLink,
-    faqsLink,
+    // faqsLink,
     supportLink,
-    uniqueLinks.termsRules,
+    // uniqueLinks.termsRules,
 ];
 
 // Profile Dropdown

@@ -11,6 +11,9 @@ import {
   updateUserVipTier,
   getVipStatistics,
   updateBirthday,
+  getBirthdayBonusInfo,
+  getBirthdayBonusHistory,
+  resetAllBirthdayBonusClaims,
 } from "../controllers/vip.controller";
 import { verifyJWT, verifyPermission } from "../middlewares/auth-middleware";
 
@@ -20,6 +23,8 @@ const vipRouter = express.Router();
 vipRouter.get("/status", verifyJWT, getVipStatus);
 vipRouter.get("/tiers", verifyJWT, getVipTiers);
 vipRouter.post("/birthday-bonus/claim", verifyJWT, claimBirthdayBonus);
+vipRouter.get("/birthday-bonus/info", verifyJWT, getBirthdayBonusInfo);
+vipRouter.get("/birthday-bonus/history", verifyJWT, getBirthdayBonusHistory);
 vipRouter.get("/bonus-spins/check", verifyJWT, checkBonusSpins);
 vipRouter.post("/bonus-spins/use", verifyJWT, useBonusSpin);
 vipRouter.get("/redemption-limit", verifyJWT, getRedemptionLimit);
@@ -52,6 +57,13 @@ vipRouter.get(
   verifyJWT,
   verifyPermission(['ADMIN']),
   getVipStatistics
+);
+
+vipRouter.post(
+  "/admin/birthday-bonus/reset",
+  verifyJWT,
+  verifyPermission(['ADMIN']),
+  resetAllBirthdayBonusClaims
 );
 
 export default vipRouter;

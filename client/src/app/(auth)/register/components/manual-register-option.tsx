@@ -124,7 +124,8 @@ const ManualregisterOption = () => {
                         phone: phoneValidation.e164!,
                         state: value,
                         acceptSMSMarketing: form.acceptSMSMarketing,
-                        acceptSMSTerms: form.acceptSMSTerms
+                        acceptSMSTerms: form.acceptSMSTerms,
+                        isOpted: form.acceptSMSMarketing
                     };
                     const response = await registerUser(payload) as any;
                     

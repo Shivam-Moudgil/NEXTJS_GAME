@@ -13,7 +13,7 @@ export default function IncludeInVIP() {
     const vipProgramFeatures: VipProgramFeaturesProps[] = [
         {
             img: '/vip-program/features/1.png',
-            title: '3 Tiered Wheel',
+            title: 'Fortune Wheel',
             color: 'red',
         },
         {

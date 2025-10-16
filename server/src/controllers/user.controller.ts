@@ -48,7 +48,7 @@ const generateAccessAndRefreshTokens = async (userId: string) => {
 };
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { email, name, password, role, phone, acceptSMSMarketing } = req.body;
+  const { email, name, password, role, phone, acceptSMSMarketing,isOpted } = req.body;
   const existedUser = await User.findOne({ email });
 
   const bannedStates = [
@@ -57,6 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
     "Montana",
     "Connecticut",
     "Idaho",
+    "California",
   ];
 
   if (req.body.state && bannedStates.includes(req.body.state)) {
@@ -64,6 +65,20 @@ const registerUser = asyncHandler(async (req, res) => {
       403,
       "Sorry, this platform isn't available for your address!"
     );
+  }
+
+  // Check for phone number duplication if phone is provided
+  if (phone) {
+    const formattedPhone = formatPhoneNumber(phone);
+    if (formattedPhone) {
+      const existingPhoneUser = await User.findOne({ phone: formattedPhone });
+      if (existingPhoneUser) {
+        throw new ApiError(
+          409,
+          "This phone number is already registered with another account. Please use a different phone number or contact support if you believe this is an error."
+        );
+      }
+    }
   }
 
   if (existedUser) {
@@ -108,15 +123,39 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User with email already exists", []);
   }
 
-  const user = await User.create({
-    ...req.body,
-    email,
-    password,
-    name,
-    isEmailVerified: false,
-    isSmsOpted: acceptSMSMarketing || false,
-    role: role || rolesEnum.USER,
-  });
+  let user;
+  try {
+    user = await User.create({
+      ...req.body,
+      email,
+      password,
+      name,
+      isEmailVerified: false,
+      isSmsOpted: acceptSMSMarketing || false,
+      isOpted,
+      role: role || rolesEnum.USER,
+    });
+  } catch (error: any) {
+    // Handle database constraint violations
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      if (field === 'phone') {
+        throw new ApiError(
+          409,
+          "This phone number is already registered with another account. Please use a different phone number or contact support if you believe this is an error."
+        );
+      } else if (field === 'email') {
+        throw new ApiError(409, "User with email already exists", []);
+      } else {
+        throw new ApiError(
+          409,
+          `A user with this ${field} already exists. Please use a different ${field}.`
+        );
+      }
+    }
+    // Re-throw other errors
+    throw error;
+  }
 
   const { unHashedToken, hashedToken, tokenExpiry } =
     user.generateTemporaryToken();
@@ -669,11 +708,23 @@ const updateProfile = asyncHandler(async (req, res) => {
     }
 
     phoneUpdated = user.phone !== formattedPhone;
-    updateData.phone = formattedPhone;
-
+    
+    // Check for phone number duplication if phone is being changed
     if (phoneUpdated) {
+      const existingPhoneUser = await User.findOne({ 
+        phone: formattedPhone,
+        _id: { $ne: user._id } // Exclude current user
+      });
+      if (existingPhoneUser) {
+        throw new ApiError(
+          409,
+          "This phone number is already registered with another account. Please use a different phone number or contact support if you believe this is an error."
+        );
+      }
       updateData.isPhoneVerified = false;
     }
+    
+    updateData.phone = formattedPhone;
   }
 
   // Check if DOB is being updated and validate age (only if provided)
@@ -733,13 +784,36 @@ const updateProfile = asyncHandler(async (req, res) => {
     };
   }
 
-  const updatingUser = await User.findByIdAndUpdate(
-    { _id: user._id },
-    { ...updateData },
-    { new: true }
-  ).select(
-    "-password -refreshToken -emailVerificationToken -emailVerificationExpiry"
-  );
+  let updatingUser;
+  try {
+    updatingUser = await User.findByIdAndUpdate(
+      { _id: user._id },
+      { ...updateData },
+      { new: true }
+    ).select(
+      "-password -refreshToken -emailVerificationToken -emailVerificationExpiry"
+    );
+  } catch (error: any) {
+    // Handle database constraint violations
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyPattern)[0];
+      if (field === 'phone') {
+        throw new ApiError(
+          409,
+          "This phone number is already registered with another account. Please use a different phone number or contact support if you believe this is an error."
+        );
+      } else if (field === 'email') {
+        throw new ApiError(409, "User with email already exists", []);
+      } else {
+        throw new ApiError(
+          409,
+          `A user with this ${field} already exists. Please use a different ${field}.`
+        );
+      }
+    }
+    // Re-throw other errors
+    throw error;
+  }
 
   res
     .status(200)

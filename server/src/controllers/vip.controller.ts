@@ -7,6 +7,7 @@ import vipService from "../services/vip.service";
 import UserModel from "../models/user.model";
 import UserBonusModel from "../models/bonus.model";
 import { logger } from "../utils/logger";
+import walletModel from "../models/wallet.model";
 
 /**
  * Get user's current VIP tier status and perks
@@ -61,12 +62,12 @@ export const claimBirthdayBonus = asyncHandler(async (req: Request, res: Respons
   }
   
   // Claim the bonus
-  const bonusAmount = await vipService.claimBirthdayBonus(userId);
+  const bonusAmount = await vipService.claimBirthdayBonus(userId, user.birthday);
   
   // Add to user's gold coins
-  const userBonus = await UserBonusModel.findOne({ userId });
+  const userBonus = await walletModel.findOne({ userId });
   if (userBonus) {
-    userBonus.goldCoins += bonusAmount;
+    userBonus.balance += bonusAmount;
     await userBonus.save();
   }
   
@@ -75,7 +76,7 @@ export const claimBirthdayBonus = asyncHandler(async (req: Request, res: Respons
   return res.status(200).json(
     new ApiResponse(
       200,
-      { bonusAmount, newBalance: userBonus?.goldCoins },
+      { bonusAmount, newBalance: userBonus?.balance },
       "Birthday bonus claimed successfully"
     )
   );
@@ -101,19 +102,16 @@ export const checkBonusSpins = asyncHandler(async (req: Request, res: Response) 
 });
 
 /**
- * Use/consume a bonus spin
+ * Use/consume a bonus spin for spin wheel
  */
 export const useBonusSpin = asyncHandler(async (req: Request, res: Response) => {
   const { _id: userId } = getUserFromRequest(req);
-  const { gameId, gameName } = req.body;
+  const ipAddress = req.ip || req.connection.remoteAddress;
+  const userAgent = req.get('User-Agent');
   
-  if (!gameId || !gameName) {
-    throw new ApiError(400, "gameId and gameName are required");
-  }
+  logger.info(`User ${userId} attempting to use bonus spin on spin wheel`);
   
-  logger.info(`User ${userId} attempting to use bonus spin on ${gameName}`);
-  
-  const result = await vipService.useBonusSpin(userId, gameId, gameName);
+  const result = await vipService.useBonusSpin(userId, ipAddress, userAgent);
   
   if (!result.success) {
     return res.status(400).json(
@@ -285,6 +283,7 @@ export const getVipStatistics = asyncHandler(async (req: Request, res: Response)
 
 /**
  * Update user's birthday
+ * Enhanced security: prevents birthday changes after bonus claims
  */
 export const updateBirthday = asyncHandler(async (req: Request, res: Response) => {
   const { _id: userId } = getUserFromRequest(req);
@@ -300,7 +299,49 @@ export const updateBirthday = asyncHandler(async (req: Request, res: Response) =
     throw new ApiError(400, "Birthday must be in YYYY-MM-DD format");
   }
   
-  logger.info(`User ${userId} updating birthday to ${birthday}`);
+  // Get current user to check existing birthday
+  const currentUser = await UserModel.findById(userId);
+  if (!currentUser) {
+    throw new ApiError(404, "User not found");
+  }
+  
+  // Get VIP tier to check birthday bonus history
+  const vipTier = await vipService.getOrCreateVipTier(userId);
+  
+  // Security check: Prevent birthday changes if user has claimed birthday bonus THIS YEAR
+  const currentYear = new Date().getFullYear();
+  const hasClaimedThisYear = vipTier.birthdayBonusHistory?.some(
+    (claim) => {
+      const claimYear = new Date(claim.claimedDate).getFullYear();
+      return claimYear === currentYear;
+    }
+  );
+  
+  if (hasClaimedThisYear) {
+    throw new ApiError(
+      403, 
+      "Birthday cannot be changed after claiming birthday bonus this year. This prevents fraud and maintains system integrity. You can change your birthday next year if needed."
+    );
+  }
+  
+  // Additional security: Check if the new birthday was already used by this user THIS YEAR
+  if (vipTier.birthdayBonusHistory) {
+    const birthdayUsedThisYear = vipTier.birthdayBonusHistory.some(
+      (claim) => {
+        const claimYear = new Date(claim.claimedDate).getFullYear();
+        return claim.birthdayUsed === birthday && claimYear === currentYear;
+      }
+    );
+    
+    if (birthdayUsedThisYear) {
+      throw new ApiError(
+        409,
+        "This birthday has already been used for a bonus claim this year. Please use a different birthday."
+      );
+    }
+  }
+  
+  logger.info(`User ${userId} updating birthday from ${currentUser.birthday} to ${birthday}`);
   
   const user = await UserModel.findByIdAndUpdate(
     userId,
@@ -314,6 +355,65 @@ export const updateBirthday = asyncHandler(async (req: Request, res: Response) =
   
   return res.status(200).json(
     new ApiResponse(200, { birthday: user.birthday }, "Birthday updated successfully")
+  );
+});
+
+/**
+ * Reset all birthday bonus claims for new year (Admin only)
+ */
+export const resetAllBirthdayBonusClaims = asyncHandler(async (req: Request, res: Response) => {
+  const result = await vipService.resetAllBirthdayBonusClaims();
+  
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      result,
+      `Successfully reset birthday bonus claims for ${result.resetCount} users`
+    )
+  );
+});
+
+/**
+ * Get birthday bonus eligibility info
+ */
+export const getBirthdayBonusInfo = asyncHandler(async (req: Request, res: Response) => {
+  const { _id: userId } = getUserFromRequest(req);
+  
+  // Get user to check birthday
+  const user = await UserModel.findById(userId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  
+  const bonusInfo = await vipService.getBirthdayBonusInfo(userId, user.birthday);
+  
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      bonusInfo,
+      "Birthday bonus info retrieved successfully"
+    )
+  );
+});
+
+/**
+ * Get birthday bonus history for admin monitoring
+ */
+export const getBirthdayBonusHistory = asyncHandler(async (req: Request, res: Response) => {
+  const { _id: userId } = getUserFromRequest(req);
+  
+  const vipTier = await vipService.getOrCreateVipTier(userId);
+  
+  return res.status(200).json(
+    new ApiResponse(
+      200,
+      { 
+        birthdayBonusHistory: vipTier.birthdayBonusHistory || [],
+        totalClaims: vipTier.birthdayBonusHistory?.length || 0,
+        lastClaimDate: vipTier.lastBirthdayBonusDate
+      },
+      "Birthday bonus history retrieved successfully"
+    )
   );
 });
 

@@ -28,7 +28,7 @@ export default function VIPLevel() {
     };
 
     const getTierDisplayName = () => {
-        if (!vipStatus) return 'Standard Player';
+        if (!vipStatus) return 'Standard';
         return vipStatus.tierName;
     };
 

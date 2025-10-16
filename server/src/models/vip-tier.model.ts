@@ -148,6 +148,11 @@ export interface IVipTier extends Document {
   // Birthday Bonus
   birthdayBonusClaimed: boolean;
   lastBirthdayBonusDate?: Date;
+  birthdayBonusHistory: Array<{
+    claimedDate: Date;
+    birthdayUsed: string; // Store the birthday that was used for the claim
+    bonusAmount: number;
+  }>;
   
   // Period-Based Bonus Spins
   bonusSpinsRemaining: number;
@@ -218,6 +223,23 @@ const vipTierSchema = new Schema<IVipTier>(
     lastBirthdayBonusDate: {
       type: Date,
     },
+    birthdayBonusHistory: [
+      {
+        claimedDate: {
+          type: Date,
+          required: true,
+        },
+        birthdayUsed: {
+          type: String,
+          required: true,
+          comment: "The birthday that was used for this claim (YYYY-MM-DD format)",
+        },
+        bonusAmount: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
     bonusSpinsRemaining: {
       type: Number,
       default: 0,

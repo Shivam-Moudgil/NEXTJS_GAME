@@ -27,6 +27,7 @@ import otpRouter from "./otp.route"; // OTP verification routes
 import roleRouter from "./role.route"; // Role management routes
 import userManagementRouter from "./user-management.route"; // User management routes
 import vipRouter from "./vip.route"; // VIP tier system routes
+import spinWheelRouter from "./spin-wheel.route"; // Spin wheel routes
 
 // Create Express Router instance
 const router = express.Router();
@@ -48,6 +49,7 @@ router.use("/otp", otpRouter); // OTP verification endpoints
 router.use("/roles", roleRouter); // Role management endpoints
 router.use("/user-management", userManagementRouter); // User management endpoints
 router.use("/vip", vipRouter); // VIP tier system endpoints
+router.use("/spin-wheel", spinWheelRouter); // Spin wheel endpoints
 
 // Export the configured router
 export default router;

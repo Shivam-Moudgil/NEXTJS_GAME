@@ -12,7 +12,7 @@ import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 
-import { GameSearchModal } from '@/components/modal/game-search';
+// import { GameSearchModal } from '@/components/modal/game-search';
 import RootModals from '@/components/modal/root-modals';
 import { NotificationPopup } from '@/components/notification/notification-popup';
 import { PageTransitionWrapper } from '@/components/wrappers/page-transition-wrapper';
@@ -151,7 +151,7 @@ export default function RootLayout({
                                                     <PageTransitionWrapper>
                                                         <LayoutWrapper>
                                                             {children}
-                                                            <GameSearchModal />
+                                                            {/* <GameSearchModal /> */}
                                                         </LayoutWrapper>
                                                     </PageTransitionWrapper>
                                                     <GlobalParticleBg />

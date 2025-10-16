@@ -147,7 +147,7 @@ export default function CasinoGames() {
                   ) : games.length === 0 ? (
                     // Empty state
                     <div className='col-span-full text-center py-12'>
-                      <p className='text-gray-400'>No games available</p>
+                      <p className='text-gray-400'>Coming soon...</p>
                     </div>
                   ) : (
                     // Games

@@ -22,14 +22,14 @@ export default function ExclusiveProgram() {
                 {
                     label: 'Daily Rewards',
                     icon: 'lucide:calendar-1',
-                    rightSec: 'Free for Everyone',
+                    rightSec: 'Available',
                     isLock: false,
                     color: '--color-green-500',
                 },
                 {
                     label: 'Weekly SC Reward',
                     icon: 'lucide:coins',
-                    rightSec: 'Free for Everyone',
+                    rightSec: 'Available',
                     isLock: false,
                     color: '--color-yellow-500',
                 },

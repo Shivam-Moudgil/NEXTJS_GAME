@@ -8,7 +8,7 @@ export const AgeVerificationPolicyData = [
         ),
         description: (
             <NeonText as='p' className='h6-title'>
-                Participants must be at least 18 years old (or the legal age in
+                Participants must be at least 21 years old (or the legal age in
                 their jurisdiction) to register and participate in games and
                 sweepstakes on our platform. In certain jurisdictions, the
                 minimum age may be 21 years or older due to local gaming
@@ -35,7 +35,7 @@ export const AgeVerificationPolicyData = [
                     <li>
                         <NeonText as='span' className='h6-title'>
                             United States: Washington, Connecticut, Idaho,
-                            Michigan, Montana, Nevada, Louisiana, New Jersey.
+                            Michigan, Montana, Nevada, California, Louisiana, New Jersey.
                         </NeonText>
                     </li>
                     <li>

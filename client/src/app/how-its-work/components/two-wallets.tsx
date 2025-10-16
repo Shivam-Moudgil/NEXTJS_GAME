@@ -52,66 +52,67 @@ export default function TwoWallets() {
     const walletsInfo = [
         {
             id: 'bonus-games-wallet',
-            title: 'Bonus Games Wallet',
+            title: 'Bonus Gold Coin',
             coinSupport: ['GC', 'SC'],
             userFor: 'Bonus Games',
             balanceInfo: [
                 {
                     title: 'Bonus GC',
                     description: [
-                        'Gold Coins earned free (sign‑up, daily logins, streaks, promos). For entertainment only, not redeemable.',
+                        'Gold Coins earned free from daily logins, sign-up bonuses, streaks, or select promotions. Used only for Bonus Games within the platform. For entertainment use only — not redeemable for rewards.',
                     ],
                     color: 'yellow',
                 },
                 {
-                    title: 'Bonus SC',
+                    title: 'PURCHASED GC',
                     description: [
-                        'Sweep Coins from the free entry form or select promos.',
-                        'Used for sweepstakes entry; redeemable if eligible under official rules.',
+                        'Gold Coins purchased to unlock and play Exclusive and Signature Games.',
+                        'For entertainment purposes only. Not redeemable for rewards.',
                     ],
-                    color: 'green',
+                    color: 'yellow',
                 },
             ],
             keyNotes: {
                 description: [
-                    'GC is for gameplay only.',
-                    'SC may be obtained through promotions or the free entry form.',
-                    'SC may qualify for redemption under official rules.',
-                    'Balances do not move between wallets.',
+                    'GC are for gameplay only and have no monetary value.',
+                    'GC may be purchased to play Exclusive or Signature Games, or earned free from daily logins, streaks, or select promotions.',
+                    'GC are for entertainment purposes only and are never redeemable for rewards.',
                 ],
             },
             bottomContent:
-                'Balances do not move between wallets. Redemption eligibility is set by the Official Rules. GC is never redeemable.',
+                'GC balances do not move between wallets and cannot be converted to SC.',
         },
         {
             id: 'exclusive-signature-wallet',
-            title: 'Exclusive Signature Wallet',
+            title: 'Reward Wallet',
             coinSupport: ['GC'],
             userFor: 'Exclusive Games & Signature Games',
             balanceInfo: [
                 {
-                    title: 'Purchased GC',
+                    title: 'BONUS SC',
                     description:
-                        'Gold Coins Purchased to Unlock And Play Premium Games. For Entertainment Purposes Only. Not Redeemable For Rewards.',
-                    color: 'yellow',
+                        'Sweep Coins received from the Free Entry Form or select promotions. Used for Sweepstakes-style gameplay. May be redeemed for rewards if eligible under the Official Rules.',
+                    color: 'green',
                 },
                 {
                     title: 'Earned SC',
-                    description:
-                        'Sweep Coins earned through sweepstakes-style gameplay in this wallet. SC can be used to enter sweepstakes and may be redeemed if eligible under the official rules.',
+                    description:[
+                        'Sweep Coins earned through Sweepstakes-style gameplay using Bonus SC.',
+                        'Can be used to continue Sweepstakes-style play or redeemed for rewards if eligible under the Official Rules.',
+                    ],                        
                     color: 'green',
                 },
             ],
             keyNotes: {
-                title: 'This wallet may contain Purchased GC and Earned SC.',
+                // title: 'This wallet may contain Purchased GC and Earned SC.',
                 description: [
-                    'GC is for gameplay only, never redeemable.',
-                    'SC may be obtained through gameplay and select promos.',
-                    'SC may qualify for redemption under official rules.',
+                    'SC may be obtained free through select promotions, the Free Entry Form, or earned through Sweepstakes-style gameplay.',
+                    'SC are used for Sweepstakes entries and may qualify for redemption if eligible under the Official Rules.',
+                    'Redemption eligibility is based on verification and compliance with the Official Rules.',
                 ],
             },
             bottomContent:
-                'Balances do not move between wallets. Redemption eligibility is set by the Official Rules. GC is never redeemable.',
+                'SC balances do not move between wallets, and GC can never be exchanged for SC.',
         },
     ];
 
@@ -147,7 +148,8 @@ export default function TwoWallets() {
                                         alt={coin.coin}
                                         width={lg ? '32' : '24'}
                                         height={lg ? '32' : '24'}
-                                    />{' '}
+                                        className='motion-safe:motion-scale-loop-[1.06] motion-safe:motion-duration-2000 motion-safe:motion-ease-linear'
+                                    /> {' '}
                                     <NeonText
                                         as='span'
                                         glowColor={coin.color}
@@ -167,9 +169,14 @@ export default function TwoWallets() {
                                             />
                                         </TooltipTrigger>
                                         <TooltipContent
+                                            neon
                                             side='bottom'
                                             align='center'
-                                            className='max-w-[240px] text-white'
+                                            className='max-w-[240px] text-white backdrop-blur-3xl'
+                                            glowColor={coin.color}
+                                            backgroundColor={coin.color}
+                                            backgroundOpacity={0.2}
+                                            glowSpread={0.8}
                                         >
                                             {coin.tooltip.content}
                                         </TooltipContent>
@@ -189,7 +196,7 @@ export default function TwoWallets() {
                                 className='backdrop-blur-2xl rounded-2xl p-6 lg:p-8'
                             >
                                 <div className='flex items-left md:items-center gap-4 mb-4 flex-col md:flex-row'>
-                                    <div className='inline-flex items-center gap-3'>
+                                    {/* <div className='inline-flex items-center gap-3'>
                                         {wallet.coinSupport.map(
                                             (coin, index) => {
                                                 const { src, alt } =
@@ -203,11 +210,12 @@ export default function TwoWallets() {
                                                         alt={alt}
                                                         width={32}
                                                         height={32}
+                                                        className='motion-safe:motion-scale-loop-[1.06] motion-safe:motion-duration-2000 motion-safe:motion-ease-linear'
                                                     />
                                                 ) : null;
                                             }
                                         )}
-                                    </div>
+                                    </div> */}
 
                                     <NeonText as='h6' className='h5-title'>
                                         {wallet.title}
@@ -306,7 +314,7 @@ export default function TwoWallets() {
                                     Key notes
                                 </NeonText>
 
-                                {wallet.keyNotes.title && (
+                                {/* {wallet.keyNotes.title && (
                                     <NeonText
                                         as='p'
                                         className='text-base font-bold capitalize leading-6.5 mb-2'
@@ -315,7 +323,7 @@ export default function TwoWallets() {
                                     >
                                         {wallet.keyNotes.title}
                                     </NeonText>
-                                )}
+                                )} */}
 
                                 <ul className='list-disc pl-5 space-y-2 pr-2 mb-5 md:mb-8'>
                                     {wallet.keyNotes.description.map(

@@ -33,6 +33,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import NeonIcon from '@/components/neon/neon-icon';
+import { formatNumber } from '@/lib/utils';
 
 export default function UserInfo() {
     const { lg, xxl } = useBreakPoint();
@@ -120,41 +121,43 @@ export default function UserInfo() {
             type: 'bonusGC',
             image: '/coins/gold-coin.svg',
             display: {
-                text: `${user?.balance?.toLocaleString() || '0'} GC`,
+                text: `${formatNumber(user?.balance || 0)} GC`,
                 color: '--color-yellow-300',
             },
             color: '--color-yellow-500',
             label: 'Gold Coins',
-            description: 'Free coins for bonus games'
+            description:'Play-for-fun mode. Used for bonus games, daily rewards, and casual gameplay.',
+
         },
         {
             type: 'gameGC',
-            image: '/coins/gold-coin.svg',
+            image: '/coins/bronze-coin.svg',
             display: {
-                text: `${walletBalance?.toLocaleString() || '0'} GC`,
-                color: '--color-purple-300',
+                text: `${formatNumber(walletBalance || 0)} GC`,
+                color: '--color-yellow-300',
             },
-            color: '--color-purple-500',
+            color: '--color-yellow-500',
             label: 'Exclusive Gold Coins',
-            description: 'These coins are exclusively for Signature and Exclusive games'
+            description: 'Play-for-fun mode. Used to access exclusive and signature games for entertainment only.'
         },
         {
             type: 'sweepCoins',
             image: '/coins/sweep-coin.svg',
             display: {
-                text: `${user?.sweepCoins?.toLocaleString() || '0'} SC`,
+                text: `${formatNumber(user?.sweepCoins || 0)} SC`,
                 color: '--color-green-300',
             },
             color: '--color-green-500',
             label: 'Sweep Coins',
-            description: 'For redemption only'
-        },
+            description:
+            'Promotional play mode. Used for sweepstakes-style games available in supported regions per terms.',
+          },
         {
             type: 'tier',
             image: vipStatus ? getTierImage(vipStatus.tier) : '/vip-program/iron.png',
             display: {
                 neon: true,
-                text: vipStatus ? vipStatus.tierName : 'Standard Player',
+                text: vipStatus ? vipStatus.tierName : 'Standard',
                 color: '--color-white',
             },
             color: vipStatus ? getTierColor(vipStatus.tier) : '--color-gray-400',

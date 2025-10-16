@@ -174,7 +174,7 @@ const Footer = () => {
                         </p>
 
                         <Icon
-                            icon='uil:18-plus'
+                            icon='uil:21-plus'
                             width={36}
                             height={36}
                             className='text-[#08F5E9]'

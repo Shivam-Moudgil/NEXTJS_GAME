@@ -6,6 +6,7 @@ import NeonText from '@/components/neon/neon-text';
 import NeonIcon from '@/components/neon/neon-icon';
 import { updateBirthday } from '@/lib/api/vip';
 import { useVip } from '@/contexts/vip-context';
+import { useAuth } from '@/contexts/auth-context';
 
 interface BirthdayUpdateProps {
     className?: string;
@@ -17,6 +18,7 @@ export default function BirthdayUpdate({ className = '' }: BirthdayUpdateProps) 
     const [message, setMessage] = useState('');
     
     const { refetchVipStatus } = useVip();
+    const { user, setUser } = useAuth();
 
     const handleUpdateBirthday = async () => {
         // Validate format
@@ -34,6 +36,8 @@ export default function BirthdayUpdate({ className = '' }: BirthdayUpdateProps) 
             if (response.success) {
                 setMessage('Birthday updated! You can now claim birthday bonuses.');
                 setBirthday('');
+                // Update local user immediately so UI hides this component
+                setUser(user ? { ...user, birthday: response.data.birthday } : user);
                 await refetchVipStatus();
             }
         } catch (error) {

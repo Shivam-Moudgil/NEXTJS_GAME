@@ -19,7 +19,7 @@ export const socialChannels: SocialChannel[] = [
         description:
             'Like our page to stay updated with announcements, contests, and highlights.',
         buttonLabel: 'Follow on Facebook',
-        url: 'https://facebook.com/gtoarcade',
+        url: 'https://www.facebook.com/Goldenticketonlinearcade',
         color: '--color-blue-500',
     },
     {
@@ -28,7 +28,7 @@ export const socialChannels: SocialChannel[] = [
         description:
             'Get a peek behind the scenes, see what’s trending, and tag us in your moments.',
         buttonLabel: 'Follow on Instagram',
-        url: 'https://instagram.com/gtoarcade',
+        url: 'https://www.instagram.com/golden_ticketfam',
         color: '--color-pink-500',
     },
     {
@@ -37,7 +37,7 @@ export const socialChannels: SocialChannel[] = [
         description:
             'Join our Telegram group for instant updates, discussions, and special alerts.',
         buttonLabel: 'Join Telegram',
-        url: 'https://t.me/gtoarcade',
+        url: 'https://t.me/gtoa_online',
         color: '--color-sky-500',
     },
     {
@@ -46,7 +46,7 @@ export const socialChannels: SocialChannel[] = [
         description:
             'Don’t miss fun challenges and short videos that bring the brand to life.',
         buttonLabel: 'Follow on TikTok',
-        url: 'https://tiktok.com/@gtoarcade',
+        url: 'https://www.tiktok.com/@gtoa_gdrs?is_from_webapp=1&sender_device=pc',
         color: '--color-purple-500',
     },
     {
@@ -55,7 +55,7 @@ export const socialChannels: SocialChannel[] = [
         description:
             'Watch tutorials, gameplays, events, and more straight from our official channel.',
         buttonLabel: 'Subscribe on YouTube',
-        url: 'https://youtube.com/gtoarcade',
+        url: 'https://www.youtube.com/@GoldenTicketArcade/shorts',
         color: '--color-red-500',
     },
 ];

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 interface LegalWrapperProps {
     children: React.ReactNode;
     title: string;
-    description: string;
+    description?: string;
     className?: string; // Prop for classname
 }
 

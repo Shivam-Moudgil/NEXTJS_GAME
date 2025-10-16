@@ -4,10 +4,12 @@ import { Button } from '@/components/ui/button';
 import NeonBox from '@/components/neon/neon-box';
 import NeonText from '@/components/neon/neon-text';
 import NeonIcon from '@/components/neon/neon-icon';
-import { claimBirthdayBonus, checkBonusSpins, useBonusSpin } from '@/lib/api/vip';
+import { claimBirthdayBonus, checkBonusSpins } from '@/lib/api/vip';
 import { useAuth } from '@/contexts/auth-context';
 import { useVip } from '@/contexts/vip-context';
 import BirthdayUpdate from './birthday-update';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import SpinWheelModal from '@/components/modal/spin-wheel-modal';
 
 interface VipPerksProps {
     className?: string;
@@ -17,6 +19,7 @@ export default function VipPerks({ className = '' }: VipPerksProps) {
     const [isClaimingBirthday, setIsClaimingBirthday] = useState(false);
     const [isCheckingSpins, setIsCheckingSpins] = useState(false);
     const [isUsingSpin, setIsUsingSpin] = useState(false);
+    const [openSpin, setOpenSpin] = useState(false);
     const [bonusSpinsInfo, setBonusSpinsInfo] = useState<{
         hasSpins: boolean;
         spinsRemaining: number;
@@ -25,6 +28,33 @@ export default function VipPerks({ className = '' }: VipPerksProps) {
     
     const { user, updateUserBalance } = useAuth();
     const { vipStatus, refetchVipStatus } = useVip();
+
+    // Helper: compute 3-day birthday claim window for the current year
+    const getBirthdayWindow = (birthdayIso?: string | null) => {
+        if (!birthdayIso) return null;
+        // Expecting YYYY-MM-DD
+        const parts = birthdayIso.split('-');
+        if (parts.length < 3) return null;
+        const month = Number(parts[1]) - 1; // 0-based
+        const day = Number(parts[2]);
+        if (Number.isNaN(month) || Number.isNaN(day)) return null;
+        const now = new Date();
+        const year = now.getFullYear();
+        const birthdayThisYear = new Date(year, month, day);
+        // Start = day before; End = day after
+        const start = new Date(birthdayThisYear);
+        start.setDate(birthdayThisYear.getDate() - 1);
+        const end = new Date(birthdayThisYear);
+        end.setDate(birthdayThisYear.getDate() + 1);
+        return { start, birthday: birthdayThisYear, end };
+    };
+
+    const isWithinBirthdayWindow = (() => {
+        const win = getBirthdayWindow(user?.birthday as any);
+        if (!win) return false;
+        const now = new Date();
+        return now >= win.start && now <= win.end;
+    })();
 
     const handleClaimBirthdayBonus = async () => {
         if (!user) return;
@@ -67,35 +97,17 @@ export default function VipPerks({ className = '' }: VipPerksProps) {
 
     const handleUseBonusSpin = async () => {
         if (!bonusSpinsInfo?.hasSpins) return;
-        
-        try {
-            setIsUsingSpin(true);
-            const response = await useBonusSpin('demo-game', 'Demo Game');
-            
-            if (response.success) {
-                alert(`Spin used! ${response.data.spinsRemaining} remaining`);
-                setBonusSpinsInfo(prev => prev ? {
-                    ...prev,
-                    spinsRemaining: response.data.spinsRemaining,
-                    hasSpins: response.data.spinsRemaining > 0
-                } : null);
-            } else {
-                alert(response.message);
-            }
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Failed to use bonus spin';
-            alert(message);
-        } finally {
-            setIsUsingSpin(false);
-        }
+        setOpenSpin(true);
     };
 
     if (!vipStatus) return null;
 
     return (
         <div className={`space-y-6 ${className}`}>
-            {/* Birthday Update */}
-            <BirthdayUpdate />
+            {/* Birthday Update: show only if user has no birthday set OR cannot yet claim */}
+            {(!user?.birthday) && (
+                <BirthdayUpdate />
+            )}
             
             {/* Current VIP Perks - Tier Style */}
             <NeonBox
@@ -145,7 +157,7 @@ export default function VipPerks({ className = '' }: VipPerksProps) {
                             </NeonText>
                         </div>
                         <span className='font-bold text-base capitalize leading-normal'>
-                            Free for Everyone
+                        Available
                         </span>
                     </NeonBox>
 
@@ -172,7 +184,7 @@ export default function VipPerks({ className = '' }: VipPerksProps) {
                             </NeonText>
                         </div>
                         <span className='font-bold text-base capitalize leading-normal'>
-                            Free for Everyone
+                        Available
                         </span>
                     </NeonBox>
 
@@ -261,7 +273,7 @@ export default function VipPerks({ className = '' }: VipPerksProps) {
                             </NeonText>
                         </div>
                         <span className='font-bold text-base capitalize leading-normal'>
-                            ${vipStatus.perks.scRedemptionLimit}
+                            {vipStatus.perks.scRedemptionLimit} SC
                         </span>
                     </NeonBox>
 
@@ -410,7 +422,7 @@ export default function VipPerks({ className = '' }: VipPerksProps) {
             {/* Interactive Features */}
             <div className='space-y-4'>
                 {/* Birthday Bonus */}
-                {vipStatus.perks.birthdayBonus > 0 && (
+                {vipStatus.perks.birthdayBonus > 0 && user?.birthday && (
                     <NeonBox
                         className='p-4 rounded-xl'
                         glowColor='--color-fuchsia-500'
@@ -434,15 +446,40 @@ export default function VipPerks({ className = '' }: VipPerksProps) {
                                     <p className='text-sm text-gray-300'>
                                         {vipStatus.perks.birthdayBonus} GC available
                                     </p>
+                                    {/* Instructions */}
+                                    {vipStatus.birthdayBonusClaimed && (
+                                        <p className='text-xs text-green-400 mt-1'>
+                                            You have already claimed this year's birthday bonus.
+                                        </p>
+                                    )}
+                                    {!vipStatus.birthdayBonusClaimed && !isWithinBirthdayWindow && (
+                                        <p className='text-xs text-amber-300 mt-1'>
+                                            You can claim only during your 3-day window: the day before, your birthday, and the day after.
+                                        </p>
+                                    )}
                                 </div>
                             </div>
                             <Button
                                 onClick={handleClaimBirthdayBonus}
-                                disabled={isClaimingBirthday}
+                                disabled={isClaimingBirthday || !!vipStatus.birthdayBonusClaimed || !isWithinBirthdayWindow}
                                 size='sm'
                             >
-                                {isClaimingBirthday ? 'Claiming...' : 'Claim'}
+                                {isClaimingBirthday
+                                    ? 'Claiming...'
+                                    : vipStatus.birthdayBonusClaimed
+                                        ? 'Claimed'
+                                        : isWithinBirthdayWindow
+                                            ? 'Claim'
+                                            : 'Unavailable Now'}
                             </Button>
+                        </div>
+                        {/* More detailed instructions */}
+                        <div className='mt-2 text-xs text-gray-300'>
+                            <ul className='list-disc pl-5 space-y-1'>
+                                <li>Claim period: day before, your birthday, and day after (local time).</li>
+                                <li>One claim per year. Once claimed, this section will disappear.</li>
+                                <li>Make sure your birthday is set correctly in your profile.</li>
+                            </ul>
                         </div>
                     </NeonBox>
                 )}
@@ -513,6 +550,15 @@ export default function VipPerks({ className = '' }: VipPerksProps) {
                         </div>
                     </NeonBox>
                 )}
+
+                <Dialog open={openSpin} onOpenChange={setOpenSpin}>
+                    <DialogContent showScrollBar={false} className='sm:max-w-fit' neonBoxClass='p-0!'>
+                        <SpinWheelModal onSpinsUpdate={(spins) => {
+                            setBonusSpinsInfo(prev => prev ? { ...prev, spinsRemaining: spins, hasSpins: spins > 0 } : prev);
+                            refetchVipStatus();
+                        }} />
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     );

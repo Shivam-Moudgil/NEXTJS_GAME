@@ -3,188 +3,56 @@ import { useBreakPoint } from '@/hooks/useBreakpoint';
 import { SpinWheelOption } from '@/types/spin-wheel';
 import { useTransitionRouter } from 'next-transition-router';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import NeonBox from '../neon/neon-box';
 import NeonText from '../neon/neon-text';
 import SpinWheel from '../spin-wheel';
 import { Button } from '../ui/button';
-import { DialogContent, DialogTitle } from '../ui/dialog';
+import { DialogContent, DialogTitle, DialogClose } from '../ui/dialog';
+import { claimSpinReward, getSpinWheelConfig, useBonusSpin } from '@/lib/api/vip';
+import { useAuth } from '@/contexts/auth-context';
+import { useWalletBalance } from '@/contexts/wallet-balance-context';
 
-function SpinWheelModal() {
+interface SpinWheelModalProps {
+    onSpinsUpdate?: (spinsRemaining: number) => void;
+}
+
+function SpinWheelModal({ onSpinsUpdate }: SpinWheelModalProps) {
     const { xxs, xs } = useBreakPoint();
     const [result, setResult] = useState<SpinWheelOption | null>(null);
+    const [configRewards, setConfigRewards] = useState<Array<{ id: number; amount: number; type: 'GC' | 'SC'; rarity?: string }>>([]);
+    const [spinningIdx, setSpinningIdx] = useState<number | null>(null);
     const router = useTransitionRouter();
+    const {  updateUserSCBalance } = useAuth();
+    const {refresh:refreshWalletBalance}=useWalletBalance();
 
-    const options: SpinWheelOption[] = [
-        {
-            id: '1',
+    // Load spin-wheel config
+    useEffect(() => {
+        (async () => {
+            try {
+                const cfg = await getSpinWheelConfig();
+                if (cfg.success) setConfigRewards(cfg.data.rewards || []);
+            } catch {}
+        })();
+    }, []);
+
+    const options: SpinWheelOption[] = useMemo(() => {
+        if (!configRewards.length) return [];
+        return configRewards.map((r, idx) => ({
+            id: String(r.id ?? idx + 1),
             label: (
                 <>
                     <img
-                        src='/coins/gold-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-2'
-                        alt='Gold Coin'
-                    />
-                    150k
-                </>
-            ),
-            value: 150,
-        },
-        {
-            id: '2',
-            label: (
-                <>
-                    <img
-                        src='/coins/sweep-coin.svg'
+                        src={r.type === 'GC' ? '/coins/bronze-coin.svg' : '/coins/sweep-coin.svg'}
                         className='xs:w-6 xs:h-6 h-5 w-5 mb-1'
-                        alt='Sweep Coin'
+                        alt={r.type === 'GC' ? 'Gold Coin' : 'Sweep Coin'}
                     />
-                    250k
+                    {new Intl.NumberFormat('en-US', { notation: 'compact' }).format(r.amount)}
                 </>
             ),
-            value: 250,
-        },
-        {
-            id: '3',
-            label: (
-                <>
-                    <img
-                        src='/coins/gold-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-1'
-                        alt='Gold Coin'
-                    />
-                    180k
-                </>
-            ),
-            value: 190,
-        },
-        {
-            id: '4',
-            label: (
-                <>
-                    <img
-                        src='/coins/sweep-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-1'
-                        alt='Sweep Coin'
-                    />
-                    300k
-                </>
-            ),
-            value: 300,
-        },
-        {
-            id: '5',
-            label: (
-                <>
-                    <img
-                        src='/coins/gold-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-1'
-                        alt='Gold Coin'
-                    />
-                    200k
-                </>
-            ),
-            value: 200,
-        },
-        {
-            id: '6',
-            label: (
-                <>
-                    <img
-                        src='/coins/sweep-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-1'
-                        alt='Sweep Coin'
-                    />
-                    400k
-                </>
-            ),
-            value: 400,
-        },
-        {
-            id: '7',
-            label: (
-                <>
-                    <img
-                        src='/coins/gold-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-1'
-                        alt='Gold Coin'
-                    />
-                    350k
-                </>
-            ),
-            value: 350,
-        },
-        {
-            id: '8',
-            label: (
-                <>
-                    <img
-                        src='/coins/sweep-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-1'
-                        alt='Sweep Coin'
-                    />
-                    500k
-                </>
-            ),
-            value: 500,
-        },
-        {
-            id: '9',
-            label: (
-                <>
-                    <img
-                        src='/coins/gold-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-1'
-                        alt='Gold Coin'
-                    />
-                    600k
-                </>
-            ),
-            value: 600,
-        },
-        {
-            id: '10',
-            label: (
-                <>
-                    <img
-                        src='/coins/sweep-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-2'
-                        alt='Sweep Coin'
-                    />
-                    800k
-                </>
-            ),
-            value: 800,
-        },
-        {
-            id: '11',
-            label: (
-                <>
-                    <img
-                        src='/coins/gold-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-1'
-                        alt='Gold Coin'
-                    />
-                    1M
-                </>
-            ),
-            value: 1000,
-        },
-        {
-            id: '12',
-            label: (
-                <>
-                    <img
-                        src='/coins/sweep-coin.svg'
-                        className='xs:w-6 xs:h-6 h-5 w-5 mb-1'
-                        alt='Sweep Coin'
-                    />
-                    750k
-                </>
-            ),
-            value: 750,
-        },
-    ];
+            value: { id: r.id, amount: r.amount, type: r.type, rarity: r.rarity },
+        }));
+    }, [configRewards]);
 
     return (
         <DialogContent className='lg:max-w-fit!' neonBoxClass='max-sm:px-2!'>
@@ -235,19 +103,21 @@ function SpinWheelModal() {
                         </NeonBox>
 
                         {/* Continue Button */}
-                        <Button size='lg' onClick={() => router.push('/lobby')}>
+                        <DialogClose asChild>
+                            <Button size='lg'>
                             Continue Playing
                         </Button>
+                        </DialogClose>
                     </div>
                 ) : (
                     <>
                         <DialogTitle asChild>
                             <NeonText as='h3' className='h3-title mb-8'>
-                                Top Price
+                                Treasure Wheel
                             </NeonText>
                         </DialogTitle>
 
-                        <NeonBox
+                        {/* <NeonBox
                             glowColor='--color-green-500'
                             backgroundColor='--color-green-500'
                             backgroundOpacity={0.2}
@@ -267,16 +137,53 @@ function SpinWheelModal() {
                             >
                                 4,00,000 SC
                             </NeonText>
-                        </NeonBox>
+                        </NeonBox> */}
 
                         <SpinWheel
                             options={options}
-                            onSpin={winner => setResult(winner)}
+                            onSpin={winner => {
+                                console.log('🎯 Winner displayed:', winner);
+                                setResult(winner);
+                            }}
+                            requestWinnerIndex={async () => {
+                                // Trigger server spin to get actual result and spinsRemaining
+                                const res = await useBonusSpin('vip-wheel', 'VIP Wheel');
+                                console.log('🎲 Backend spin result:', res.data.spinResult);
+                                console.log('📋 Options array:', options.map((o, i) => ({ index: i, id: (o.value as any)?.id, amount: (o.value as any)?.amount })));
+                                
+                                if (res.success && res.data.spinResult) {
+                                    const idx = options.findIndex(o => (o.value as any)?.id === res.data.spinResult?.rewardId);
+                                    console.log(`🎯 Found rewardId ${res.data.spinResult?.rewardId} at index: ${idx}`);
+                                    setSpinningIdx(idx >= 0 ? idx : null);
+                                    
+                                    // Auto-claim reward after spin completes (increased delay to match spinDuration + revealOffset)
+                                    setTimeout(async () => {
+                                        try {
+                                            await claimSpinReward(res.data.spinResult!.spinId);
+                                            if (res.data.spinResult?.type === 'GC') {
+                                                refreshWalletBalance();
+                                            }
+                                            if (res.data.spinResult?.type === 'SC') {
+                                                updateUserSCBalance(res.data.spinResult.amount);
+                                            }
+                                            if (typeof res.data.spinsRemaining === 'number') {
+                                                onSpinsUpdate?.(res.data.spinsRemaining);
+                                            }
+                                        } catch (err) {
+                                            console.error('Claim error:', err);
+                                        }
+                                    }, 4500);
+                                    return idx >= 0 ? idx : Math.floor(Math.random() * options.length);
+                                }
+                                return Math.floor(Math.random() * options.length);
+                            }}
                             size={xs ? 430 : xxs ? 320 : 260}
-                            spinDuration={4000}
+                            pointerOffsetDeg={4}
+                            spinDuration={4500}
+                            revealOffsetMs={500}
                         />
 
-                        <div className='inline-flex items-center rounded-lg gap-3 mt-10'>
+                        {/* <div className='inline-flex items-center rounded-lg gap-3 mt-10'>
                             <NeonText
                                 glowColor='--color-purple-500'
                                 className='text-lg uppercase font-bold'
@@ -284,7 +191,7 @@ function SpinWheelModal() {
                             >
                                 EXPIRES IN: 20:08 MINUTES
                             </NeonText>
-                        </div>
+                        </div> */}
                     </>
                 )}
             </div>

@@ -5,13 +5,18 @@ import { useBreakPoint } from '@/hooks/useBreakpoint';
 import { SpinWheelProps } from '@/types/spin-wheel';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
+import NeonText from '../neon/neon-text';
 
 const SpinWheel: React.FC<SpinWheelProps> = ({
     options,
     onSpin,
     size = 300,
-    spinDuration = 3000,
+    spinDuration = 3500,
     disabled = false,
+    requestWinnerIndex,
+    easing = 'cubic-bezier(0.12, 0.66, 0.12, 1)',
+    revealOffsetMs = 250,
+    pointerOffsetDeg = 0,
 }) => {
     const [isSpinning, setIsSpinning] = useState(false);
     const [rotation, setRotation] = useState(0);
@@ -56,24 +61,65 @@ const SpinWheel: React.FC<SpinWheelProps> = ({
         };
     };
 
-    const handleSpin = useCallback(() => {
+    const handleSpin = useCallback(async () => {
         if (isSpinning || disabled || options.length === 0) return;
         setIsSpinning(true);
 
         // ⏸ Stop idle rotation while spinning
         if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
 
-        const rand = 360 * 5 + Math.random() * 360;
-        const newRot = rotation + rand;
+        // If a winner is requested externally, compute the angle to land on that index
+        let targetIndex: number | null = null;
+        if (requestWinnerIndex) {
+            try {
+                const idx = await requestWinnerIndex();
+                if (typeof idx === 'number' && idx >= 0 && idx < options.length) {
+                    targetIndex = idx;
+                }
+            } catch {}
+        }
+
+        // Calculate the absolute target angle for the server-selected index
+        let finalTargetAngle: number;
+        if (targetIndex !== null) {
+            // Segments are rendered starting at -90deg (12 o'clock in SVG coords)
+            // Segment 0 spans from -90 to -90+segmentAngle
+            // To land segment N under the top pointer, we need to rotate so that segment's center aligns
+            const segmentStartAngle = -90 + (targetIndex * segmentAngle);
+            const segmentCenterAngle = segmentStartAngle + (segmentAngle / 2);
+            // The wheel shows what's at the top (0deg in display), so we need to rotate
+            // so that segmentCenterAngle ends up at 0deg
+            finalTargetAngle = (360 - segmentCenterAngle + pointerOffsetDeg + 360) % 360;
+            console.log(`🎯 Target index: ${targetIndex}, Segment angle: ${segmentAngle}deg, Center: ${segmentCenterAngle}deg, Final target: ${finalTargetAngle}deg`);
+        } else {
+            // Random spin
+            finalTargetAngle = Math.random() * 360;
+        }
+
+        // Add multiple full rotations for visual effect
+        const fullRotations = 360 * 6;
+        // Normalize current rotation to 0-360
+        const currentNormalized = ((rotation % 360) + 360) % 360;
+        // Calculate shortest path to target (we can go positive direction)
+        let delta = finalTargetAngle - currentNormalized;
+        if (delta < 0) delta += 360;
+        
+        const jitter = (Math.random() - 0.5) * (segmentAngle * 0.05);
+        const newRot = rotation + fullRotations + delta + jitter;
+        console.log(`🎡 Spinning from ${rotation.toFixed(1)}° (normalized: ${currentNormalized.toFixed(1)}°) to ${newRot.toFixed(1)}° (target: ${finalTargetAngle.toFixed(1)}°, delta: ${delta.toFixed(1)}°)`);
         setRotation(newRot);
 
         timeoutRef.current = window.setTimeout(() => {
-            const norm = (360 - (newRot % 360)) % 360;
-            const winnerIndex =
-                Math.floor(norm / segmentAngle) % options.length;
-            setIsSpinning(false);
-            onSpin?.(options[winnerIndex]);
-        }, spinDuration);
+            // If we had a target, use it directly; otherwise compute from final angle
+            const winnerIndex = targetIndex !== null ? targetIndex : (() => {
+                const finalAngle = newRot % 360;
+                const segmentAngle360 = (360 - finalAngle + 90 - pointerOffsetDeg + 360) % 360;
+                return Math.floor(segmentAngle360 / segmentAngle) % options.length;
+            })();
+            // reveal a bit before end for snappier feel
+            window.setTimeout(() => onSpin?.(options[winnerIndex]), Math.max(0, spinDuration - revealOffsetMs));
+            window.setTimeout(() => setIsSpinning(false), spinDuration);
+        }, 16);
     }, [
         isSpinning,
         disabled,
@@ -82,6 +128,7 @@ const SpinWheel: React.FC<SpinWheelProps> = ({
         options,
         onSpin,
         spinDuration,
+        requestWinnerIndex,
     ]);
 
     useEffect(() => {
@@ -104,7 +151,7 @@ const SpinWheel: React.FC<SpinWheelProps> = ({
                         height: size,
                         transform: `rotate(${rotation}deg)`,
                         transition: isSpinning
-                            ? `transform ${spinDuration}ms ease-out`
+                            ? `transform ${spinDuration}ms ${easing}`
                             : 'none',
                     }}
                     className='relative'
@@ -223,19 +270,20 @@ const SpinWheel: React.FC<SpinWheelProps> = ({
                     style={{
                         transform: `rotate(${rotation}deg)`,
                         transition: isSpinning
-                            ? `transform ${spinDuration}ms ease-out`
+                            ? `transform ${spinDuration}ms ${easing}`
                             : 'none',
                     }}
                 ></div>
             </div>
 
+            <NeonText as='h4' className='h4-title capitalize md:mb-3'>Unlock Rewards!</NeonText>
             {/* Spin button */}
             <Button
                 size={xs ? 'lg' : 'md'}
                 onClick={handleSpin}
                 disabled={isSpinning || disabled}
             >
-                {isSpinning ? 'Spinning...' : 'SPIN'}
+                {isSpinning ? 'Spinning...' : 'SPIN NOW'}
             </Button>
         </div>
     );

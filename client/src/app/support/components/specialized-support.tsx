@@ -16,16 +16,16 @@ export default function SpecializedSupport() {
             icon: 'lucide:gamepad',
             title: 'Game Support',
             description:
-                'Having trouble with games? Get help with game rules, betting strategies, bonus features, progressive jackpots, and gameplay issues.',
-            email: 'Games@Gtorarcade.com',
+                'Need help with our games? Get assistance with how to play, game features, instructions, technical issues, or troubleshooting gameplay.',
+            email: 'Support@gtoarcade.com',
             color: '--color-purple-500',
         },
         {
-            icon: 'lucide:dollar-sign',
-            title: 'Payment Support',
+            icon: 'lucide:wallet',
+            title: 'Account & Balance Support',
             description:
-                'Questions about deposits, withdrawals, payment methods, transaction history, or banking issues? Our payment specialists are here for you.',
-            email: 'Payments@Gtorarcade.com',
+                'Need help with purchases, redemptions, transaction history, or account activity? Our support specialists are here for you.',
+            email: 'Support@gtoarcade.com',
             color: '--color-green-500',
         },
         {
@@ -74,7 +74,8 @@ export default function SpecializedSupport() {
                                 icon={support.icon}
                                 size={50}
                                 glowColor={support.color}
-                                className='mb-6'
+                                className='mb-6 motion-safe:motion-scale-loop-[1.06] motion-safe:motion-duration-2000 motion-safe:motion-ease-linear
+'
                                 // glowSpread={0.5}
                             />
                             <NeonText
@@ -103,9 +104,9 @@ export default function SpecializedSupport() {
                                 href='mailto:Support@gtorarcade.com'
                                 glowColor={support.color}
                                 glowSpread={0.5}
-                                className='text-base font-bold lowercase underline'
+                                className='text-base font-bold lowercase underline mt-auto'
                             >
-                                Support@gtorarcade.com
+                                {support.email}
                             </NeonText>
                         </NeonBox>
                     ))}

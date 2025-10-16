@@ -15,6 +15,8 @@ import { SidebarHeader } from './sidebar-header';
 import SidebarLinks from './sidebar-links';
 import SidebarSeprator from './sidebar-seprator';
 import { SidebarButton } from './sidebar-toggle-btn';
+import  FortuneWheelCard from './sidebar-fortune-wheel';
+import  VipLevelCard from './sidebar-vip-level';
 
 const SERVER_DEFAULT_WIDTH = 100;
 const OPEN_WIDTH = 280;
@@ -90,12 +92,11 @@ const Sidebar: React.FC = () => {
                 className={`
                     bg-background fixed top-0 h-screen border-r border-white/20 z-40
                     transition-transform duration-300 ease-in-out
-                    ${
-                        mounted && !xl
-                            ? sidebarOpen
-                                ? 'translate-x-0'
-                                : '-translate-x-full'
-                            : 'translate-x-0'
+                    ${mounted && !xl
+                        ? sidebarOpen
+                            ? 'translate-x-0'
+                            : '-translate-x-full'
+                        : 'translate-x-0'
                     }
                     ${mounted && !xl ? 'left-0' : 'left-0'}
                 `}
@@ -116,7 +117,7 @@ const Sidebar: React.FC = () => {
                         <ButtonGroup className='w-full flex-wrap gap-3 px-5 pt-6'>
                             <SidebarButton
                                 label='Get Coins'
-                                icon='mdi:coin'
+                                icon='mingcute:copper-coin-fill'
                                 sidebarOpen={sidebarOpen}
                                 onClick={() => {
                                     router.push('/buy-coins');
@@ -134,6 +135,22 @@ const Sidebar: React.FC = () => {
                                 }}
                             />
                         </ButtonGroup>
+
+
+                        {
+
+                            sidebarOpen && 
+                            <>
+                                <div className='px-5'>
+                                    <SidebarSeprator className='my-5' />
+                                </div>
+                                <div className='mb-5'>
+                                    <FortuneWheelCard />
+                                </div>
+                                <VipLevelCard />
+                            </>
+                        }
+
 
                         <div className='px-5'>
                             <SidebarSeprator className='my-5' />
