@@ -57,7 +57,7 @@ export function useGamePlay(gameId: string): UseGamePlayReturn {
             const { token } = await getGameToken();
 
             // Construct game URL with token
-            const url = `${foundGame.link}?accessToken=${token}&test=true`;
+            const url = `${foundGame.link}?accessToken=${token}&test=false`;
             setGameUrl(url);
         } catch (err) {
             console.error('Failed to load game:', err);

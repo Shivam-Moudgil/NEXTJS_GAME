@@ -76,7 +76,7 @@ const LayoutWrapper: React.FC<Props> = ({ children }) => {
                         {children}
                     </main>
                     <Footer />
-                    <LiveChatButton />
+                    {/* <LiveChatButton /> */}
                 </div>
             )}
 

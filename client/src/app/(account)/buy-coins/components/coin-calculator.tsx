@@ -99,7 +99,7 @@ export default function CoinCalculator() {
                                 glowColor='--color-purple-500'
                                 size={24}
                             />{' '}
-                            $1 = 100 Gold Coins
+                            $1 = 100 Exclusive Gold Coins
                         </NeonText>
                         <div className='flex items-center max-xs:flex-col gap-4 w-full mb-5'>
                             <Input

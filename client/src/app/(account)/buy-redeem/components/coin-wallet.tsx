@@ -85,7 +85,7 @@ export default function CoinWallet() {
                     </NeonText>
                     <div className='inline-flex items-center gap-3 leading-none'>
                         <Image
-                            src='/coins/gold-coin.svg'
+                            src='/coins/bronze-coin.svg'
                             height={64}
                             width={64}
                             alt={`${currency} Icon`}

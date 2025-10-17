@@ -29,12 +29,12 @@ const FeatureTiles = () => {
                                         <Button
                                             neon
                                             variant='neon'
-                                            className='grid h-auto! w-full place-items-center p-4 backdrop-blur-sm'
+                                            className='grid h-auto! w-full place-items-center xs:p-4 p-5 backdrop-blur-sm'
                                             neonBoxClass='rounded-[8px]'
                                             backgroundColor='--color-purple-500'
                                             backgroundOpacity={0.2}
                                         >
-                                            <div className='inline-flex items-center justify-center gap-2'>
+                                            <div className='inline-flex items-center justify-center gap-2 xs:flex-row flex-col'>
                                                 <NeonIcon
                                                     glowColor={`var(--color-${tile.icon.color}-500)`}
                                                     glowLayers={1}
@@ -46,7 +46,7 @@ const FeatureTiles = () => {
                                                         color={`var(--color-${tile.icon.color}-500)`}
                                                     />
                                                 </NeonIcon>
-                                                <h5 className='text-lg -mb-[2px] tracking-normal! capitalize! text-wrap text-start leading-6!'>
+                                                <h5 className='text-lg -mb-[2px] tracking-normal! capitalize! text-wrap xs:text-start text-center leading-6!'>
                                                     {tile.title}
                                                 </h5>
                                             </div>

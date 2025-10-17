@@ -19,7 +19,7 @@ const formatRouteName = (route?: string | null) => {
     if (!route) return 'HOME';
 
     if (route === '/buy-redeem') {
-        return 'Loot / History';
+        return 'Coin Wallet';
     }else if (route.includes('game-listing')) {
         return 'Games';
     }
@@ -128,8 +128,17 @@ export function PageTransitionWrapper({
                 onComplete: () => {
                     gsap.set(circle, { opacity: 0, scale: 0.8, y: -100 });
                     gsap.set(label, { opacity: 0 });
+                    // Ensure main opacity is always reset to 1
+                    gsap.set('main', { opacity: 1 });
                     next();
                 },
+                onError: () => {
+                    // Fallback: ensure opacity is reset even if animation fails
+                    gsap.set('main', { opacity: 1 });
+                    gsap.set(circle, { opacity: 0, scale: 0.8, y: -100 });
+                    gsap.set(label, { opacity: 0 });
+                    next();
+                }
             });
 
             timeline.to('main', {

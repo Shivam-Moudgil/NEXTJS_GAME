@@ -42,7 +42,7 @@ export default function IframeGameModal({
             const { token } = await getGameToken();
             
             // Construct the game URL with token
-            const url = `${game.link}?accessToken=${token}&test=true`;
+            const url = `${game.link}?accessToken=${token}&test=false`;
             setGameUrl(url);
         } catch (err) {
             console.error('Failed to load game:', err);

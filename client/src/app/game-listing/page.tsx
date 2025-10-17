@@ -106,7 +106,7 @@ function GameListing() {
             <section className='text-center mb-10 mt-2'>
                 <div className={cn(isLoggedIn ? 'w-full' : 'container-xxl')}>
                     <NeonText as='h1' className='h1-title'>
-                        Casino games
+                        Games
                     </NeonText>
                 </div>
             </section>

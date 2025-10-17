@@ -90,7 +90,7 @@ export default function CoinPackages() {
                                             >
                                                 <div className='text-yellow-300 flex items-center gap-2'>
                                                     <Image
-                                                        src='/coins/gold-coin.svg'
+                                                        src='/coins/bronze-coin.svg'
                                                         height={24}
                                                         width={24}
                                                         alt='GC Icon'

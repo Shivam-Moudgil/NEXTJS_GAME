@@ -17,6 +17,11 @@ let nextConfig: NextConfig = {
             },
             {
                 protocol: 'https',
+                hostname: 'gtoarcade.com',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
                 hostname: 'staging.gtoarcade.com',
                 pathname: '/**',
             },

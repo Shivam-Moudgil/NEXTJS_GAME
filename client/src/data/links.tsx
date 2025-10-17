@@ -322,7 +322,7 @@ export const sidebarLinks: LinkProps[] = [
 ];
 
 export const sidebarLinksBottom: LinkProps[] = [
-    // howItWorkLink,
+    howItWorkLink,
     // faqsLink,
     supportLink,
     // uniqueLinks.termsRules,

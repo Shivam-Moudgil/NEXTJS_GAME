@@ -3,6 +3,7 @@ import Script from 'next/script';
 
 import GlobalParticleBg from '@/components/glowing-particles-background';
 import LayoutWrapper from '@/components/wrappers/layout-wrapper';
+import OpacitySafety from '@/components/opacity-safety';
 
 import type { Metadata, Viewport } from 'next';
 
@@ -153,6 +154,7 @@ export default function RootLayout({
                                                             {children}
                                                             {/* <GameSearchModal /> */}
                                                         </LayoutWrapper>
+                                                        <OpacitySafety />
                                                     </PageTransitionWrapper>
                                                     <GlobalParticleBg />
                                                     <RootModals />
