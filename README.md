@@ -1,12 +1,12 @@
-## Frontend
+# Frontend
 bun install 
 
-# For Development:
+## For Development:
 bun run dev
 
-# For build:
+## For build:
 bun run build
 bun run start  -> to check build Code
 
-## Backend
+# Backend
 Backend is same as old one.
