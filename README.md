@@ -1,5 +1,5 @@
 ## Frontend
-bun install \n
+bun install /n \\n //n
 For Development:
 bun run dev
 For build:
