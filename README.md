@@ -1,8 +1,10 @@
 ## Frontend
-bun install /n \\n //n
-For Development:
+bun install 
+
+# For Development:
 bun run dev
-For build:
+
+# For build:
 bun run build
 bun run start  -> to check build Code
 
