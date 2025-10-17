@@ -5,11 +5,13 @@ import { useParams, useRouter } from 'next/navigation';
 import { useGamePlay } from '@/hooks/useGamePlay';
 import { Icon } from '@iconify/react';
 import AuthGuard from '@/components/auth-guard';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function GamePlayPage() {
     const params = useParams();
     const router = useRouter();
     const gameId = params.gameId as string;
+    const { refetchUser } = useAuth();
 
     const { game, gameUrl, loading, error, retry } = useGamePlay(gameId);
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -67,6 +69,7 @@ export default function GamePlayPage() {
         if (document.fullscreenElement) {
             document.exitFullscreen();
         }
+        refetchUser();
         router.back();
     }, [router]);
 
