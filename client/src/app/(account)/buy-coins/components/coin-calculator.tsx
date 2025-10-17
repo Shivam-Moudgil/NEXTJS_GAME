@@ -52,7 +52,7 @@ export default function CoinCalculator() {
 
         // Create package object for payment modal
         const packageData: CoinPackage = {
-            totalGC: calculation.totalCoins,
+            totalGC: baseCoins,
             bonusGC: bonusCoins > 0 ? bonusCoins : undefined,
             tag: bonusCoins > 0 ? 'Custom Package' : undefined,
             price: `$${numAmount}`,

@@ -89,9 +89,49 @@ export default function AuthGuard({
         );
     }
 
-    // Don't render if not logged in
+    // Show login message if not logged in
     if (!isLoggedIn && !user) {
-        return null;
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900" suppressHydrationWarning>
+                <div className="text-center max-w-md mx-auto p-8" suppressHydrationWarning>
+                    <div className="mb-6" suppressHydrationWarning>
+                        <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center" suppressHydrationWarning>
+                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" suppressHydrationWarning>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <h2 className="text-2xl font-bold text-white mb-2" suppressHydrationWarning>
+                            Authentication Required
+                        </h2>
+                        <p className="text-gray-300 mb-6" suppressHydrationWarning>
+                            Please log in to access your account features.
+                        </p>
+                    </div>
+                    
+                    <div className="space-y-3" suppressHydrationWarning>
+                        <button
+                            onClick={() => router.push('/login')}
+                            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105"
+                            suppressHydrationWarning
+                        >
+                            Go to Login
+                        </button>
+                        
+                        <button
+                            onClick={() => router.push('/')}
+                            className="w-full bg-gray-700 hover:bg-gray-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200"
+                            suppressHydrationWarning
+                        >
+                            Back to Home
+                        </button>
+                    </div>
+                    
+                    <p className="text-sm text-gray-400 mt-6" suppressHydrationWarning>
+                        Redirecting automatically in a few seconds...
+                    </p>
+                </div>
+            </div>
+        );
     }
 
     // Don't render if VIP requirements not met
