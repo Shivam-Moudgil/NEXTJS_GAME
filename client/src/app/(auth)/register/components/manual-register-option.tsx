@@ -116,9 +116,22 @@ const ManualregisterOption = () => {
                 }
                 setLoading(true);
                 try {
-                    const [first, middle, ...rest] = form.fullName.trim().split(/\s+/);
+                    const parts = form.fullName.trim().split(/\s+/);
+
+                    let first = parts[0] || '';
+                    let middle = parts[1] || '';
+                    let last = parts.slice(2).join(' ') || '';
+                    
+                    // if no last name but there is a middle, treat middle as last
+                    if (!last && middle) {
+                      last = middle;
+                      middle = '';
+                    }
+                    
                     const payload = {
-                        name: { first: first || '', middle: middle || '', last: rest.join(' ') || '' },
+                        name: { first,
+                            middle,
+                            last },
                         email: form.email.toLowerCase(),
                         password: form.password,
                         phone: phoneValidation.e164!,
