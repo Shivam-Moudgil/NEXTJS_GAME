@@ -17,18 +17,19 @@ export const GAME_TABS: GameTab[] = [
     types: ['bonus'],
     description: 'Games with special bonus features',
   },
+    {
+    id: 'exclusive',
+    title: 'Exclusive Games',
+    types: ['exclusive'],
+    description: 'Platform exclusive games',
+  },
   {
     id: 'signature',
     title: 'Signature Games',
     types: ['signature'],
     description: 'Platform signature games',
   },
-  {
-    id: 'exclusive',
-    title: 'Exclusive Games',
-    types: ['exclusive'],
-    description: 'Platform exclusive games',
-  },
+
   // {
   //   id: 'new_releases',
   //   title: 'New Releases',
